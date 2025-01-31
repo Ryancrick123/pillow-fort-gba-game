@@ -1,209 +1,210 @@
-bn_bg_blocks_manager.o: C:/dev/pf_lp/butano/src/bn_bg_blocks_manager.cpp \
- C:/dev/pf_lp/butano/src/bn_bg_blocks_manager.h \
- C:/dev/pf_lp/butano/include/bn_span.h \
- C:/dev/pf_lp/butano/include/bn_array.h \
- C:/dev/pf_lp/butano/include/bn_assert.h \
- C:/dev/pf_lp/butano/include/bn_config_assert.h \
- C:/dev/pf_lp/butano/include/bn_common.h \
- C:/dev/pf_lp/butano/hw/include/bn_hw_common.h \
- C:/dev/pf_lp/butano/include/bn_config_doxygen.h \
- C:/dev/pf_lp/butano/include/bn_sstream.h \
- C:/dev/pf_lp/butano/include/bn_fixed_fwd.h \
- C:/dev/pf_lp/butano/include/bn_string_fwd.h \
- C:/dev/pf_lp/butano/include/bn_istring_base.h \
- C:/dev/pf_lp/butano/include/bn_algorithm.h \
- C:/dev/pf_lp/butano/include/bn_functional.h \
- C:/dev/pf_lp/butano/include/bn_alignment.h \
- C:/dev/pf_lp/butano/include/bn_type_traits.h \
- C:/dev/pf_lp/butano/include/bn_assert_callback_type.h \
- C:/dev/pf_lp/butano/include/bn_utility.h \
- C:/dev/pf_lp/butano/include/bn_iterator.h \
- C:/dev/pf_lp/butano/include/bn_array_fwd.h \
- C:/dev/pf_lp/butano/include/bn_span_fwd.h \
- C:/dev/pf_lp/butano/include/bn_optional.h \
- C:/dev/pf_lp/butano/include/bn_memory_alias.h \
- C:/dev/pf_lp/butano/include/bn_config_log.h \
- C:/dev/pf_lp/butano/include/bn_log_backend.h \
- C:/dev/pf_lp/butano/include/bn_affine_bg_map_cell.h \
- C:/dev/pf_lp/butano/include/bn_regular_bg_map_cell.h \
- C:/dev/pf_lp/butano/include/bn_limits.h \
- C:/dev/pf_lp/butano/include/bn_string_view.h \
- C:/dev/pf_lp/butano/src/bn_bgs_manager.h \
- C:/dev/pf_lp/butano/include/bn_fixed_fwd.h \
- C:/dev/pf_lp/butano/include/bn_optional_fwd.h \
- C:/dev/pf_lp/butano/include/bn_fixed_point_fwd.h \
- C:/dev/pf_lp/butano/include/bn_config_bg_blocks.h \
- C:/dev/pf_lp/butano/include/bn_affine_bg_big_map_canvas_size.h \
- C:/dev/pf_lp/butano/hw/include/bn_hw_dma.h \
- C:/dev/pf_lp/butano/hw/include/bn_hw_tonc.h \
- C:/dev/pf_lp/butano/include/bn_common.h \
- C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc.h \
- C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_types.h \
- C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_memmap.h \
- C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_memdef.h \
- C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_bios.h \
- C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_core.h \
- C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_input.h \
- C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_irq.h \
- C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_math.h \
- C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_oam.h \
- C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_tte.h \
- C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_surface.h \
- C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_video.h \
- C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_nocash.h \
- C:/dev/pf_lp/butano/hw/include/bn_hw_memory.h \
- C:/dev/pf_lp/butano/hw/3rd_party/agbabi/include/aeabi.h \
- C:/dev/pf_lp/butano/hw/3rd_party/agbabi/include/agbabi.h \
- C:/dev/pf_lp/butano/hw/include/bn_hw_bg_blocks.h \
- C:/dev/pf_lp/butano/hw/include/bn_hw_bg_blocks_constants.h \
- C:/dev/pf_lp/butano/include/bn_tile.h \
- C:/dev/pf_lp/butano/src/bn_bg_maps.cpp.h \
- C:/dev/pf_lp/butano/include/bn_bg_maps.h \
- C:/dev/pf_lp/butano/src/bn_bg_tiles.cpp.h \
- C:/dev/pf_lp/butano/include/bn_bg_tiles.h \
- C:/dev/pf_lp/butano/src/bn_regular_bg_map_ptr.cpp.h \
- C:/dev/pf_lp/butano/include/bn_regular_bg_map_ptr.h \
- C:/dev/pf_lp/butano/include/bn_span.h \
- C:/dev/pf_lp/butano/include/bn_optional.h \
- C:/dev/pf_lp/butano/include/bn_regular_bg_map_cell.h \
- C:/dev/pf_lp/butano/include/bn_bg_palette_ptr.h \
- C:/dev/pf_lp/butano/include/bn_fixed.h \
- C:/dev/pf_lp/butano/include/bn_compare.h \
- C:/dev/pf_lp/butano/include/bn_regular_bg_item.h \
- C:/dev/pf_lp/butano/include/bn_fixed_point.h \
- C:/dev/pf_lp/butano/include/bn_point.h \
- C:/dev/pf_lp/butano/include/bn_fixed_point_fwd.h \
- C:/dev/pf_lp/butano/include/bn_bg_palette_item.h \
- C:/dev/pf_lp/butano/include/bn_color.h \
- C:/dev/pf_lp/butano/include/bn_bpp_mode.h \
- C:/dev/pf_lp/butano/include/bn_compression_type.h \
- C:/dev/pf_lp/butano/include/bn_regular_bg_map_item.h \
- C:/dev/pf_lp/butano/include/bn_size.h \
- C:/dev/pf_lp/butano/include/bn_regular_bg_tiles_item.h \
- C:/dev/pf_lp/butano/include/bn_tile.h \
- C:/dev/pf_lp/butano/include/bn_regular_bg_tiles_ptr.h \
- C:/dev/pf_lp/butano/src/bn_regular_bg_map_item.cpp.h \
- C:/dev/pf_lp/butano/include/bn_regular_bg_map_item.h \
- C:/dev/pf_lp/butano/hw/include/bn_hw_decompress.h \
- C:/dev/pf_lp/butano/hw/3rd_party/cult-of-gba-bios/include/cult-of-gba-bios.h \
- C:/dev/pf_lp/butano/src/bn_regular_bg_tiles_ptr.cpp.h \
- C:/dev/pf_lp/butano/include/bn_regular_bg_tiles_item.h \
- C:/dev/pf_lp/butano/src/bn_regular_bg_tiles_item.cpp.h \
- C:/dev/pf_lp/butano/src/bn_affine_bg_map_ptr.cpp.h \
- C:/dev/pf_lp/butano/include/bn_affine_bg_map_ptr.h \
- C:/dev/pf_lp/butano/include/bn_affine_bg_map_cell.h \
- C:/dev/pf_lp/butano/include/bn_affine_bg_item.h \
- C:/dev/pf_lp/butano/include/bn_affine_bg_map_item.h \
- C:/dev/pf_lp/butano/include/bn_affine_bg_tiles_item.h \
- C:/dev/pf_lp/butano/include/bn_affine_bg_tiles_ptr.h \
- C:/dev/pf_lp/butano/src/bn_affine_bg_map_item.cpp.h \
- C:/dev/pf_lp/butano/include/bn_affine_bg_map_item.h \
- C:/dev/pf_lp/butano/src/bn_affine_bg_tiles_ptr.cpp.h \
- C:/dev/pf_lp/butano/include/bn_affine_bg_tiles_item.h \
- C:/dev/pf_lp/butano/src/bn_affine_bg_tiles_item.cpp.h \
- C:/dev/pf_lp/butano/include/bn_log.h \
- C:/dev/pf_lp/butano/include/bn_config_log.h
-C:/dev/pf_lp/butano/src/bn_bg_blocks_manager.h:
-C:/dev/pf_lp/butano/include/bn_span.h:
-C:/dev/pf_lp/butano/include/bn_array.h:
-C:/dev/pf_lp/butano/include/bn_assert.h:
-C:/dev/pf_lp/butano/include/bn_config_assert.h:
-C:/dev/pf_lp/butano/include/bn_common.h:
-C:/dev/pf_lp/butano/hw/include/bn_hw_common.h:
-C:/dev/pf_lp/butano/include/bn_config_doxygen.h:
-C:/dev/pf_lp/butano/include/bn_sstream.h:
-C:/dev/pf_lp/butano/include/bn_fixed_fwd.h:
-C:/dev/pf_lp/butano/include/bn_string_fwd.h:
-C:/dev/pf_lp/butano/include/bn_istring_base.h:
-C:/dev/pf_lp/butano/include/bn_algorithm.h:
-C:/dev/pf_lp/butano/include/bn_functional.h:
-C:/dev/pf_lp/butano/include/bn_alignment.h:
-C:/dev/pf_lp/butano/include/bn_type_traits.h:
-C:/dev/pf_lp/butano/include/bn_assert_callback_type.h:
-C:/dev/pf_lp/butano/include/bn_utility.h:
-C:/dev/pf_lp/butano/include/bn_iterator.h:
-C:/dev/pf_lp/butano/include/bn_array_fwd.h:
-C:/dev/pf_lp/butano/include/bn_span_fwd.h:
-C:/dev/pf_lp/butano/include/bn_optional.h:
-C:/dev/pf_lp/butano/include/bn_memory_alias.h:
-C:/dev/pf_lp/butano/include/bn_config_log.h:
-C:/dev/pf_lp/butano/include/bn_log_backend.h:
-C:/dev/pf_lp/butano/include/bn_affine_bg_map_cell.h:
-C:/dev/pf_lp/butano/include/bn_regular_bg_map_cell.h:
-C:/dev/pf_lp/butano/include/bn_limits.h:
-C:/dev/pf_lp/butano/include/bn_string_view.h:
-C:/dev/pf_lp/butano/src/bn_bgs_manager.h:
-C:/dev/pf_lp/butano/include/bn_fixed_fwd.h:
-C:/dev/pf_lp/butano/include/bn_optional_fwd.h:
-C:/dev/pf_lp/butano/include/bn_fixed_point_fwd.h:
-C:/dev/pf_lp/butano/include/bn_config_bg_blocks.h:
-C:/dev/pf_lp/butano/include/bn_affine_bg_big_map_canvas_size.h:
-C:/dev/pf_lp/butano/hw/include/bn_hw_dma.h:
-C:/dev/pf_lp/butano/hw/include/bn_hw_tonc.h:
-C:/dev/pf_lp/butano/include/bn_common.h:
-C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc.h:
-C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_types.h:
-C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_memmap.h:
-C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_memdef.h:
-C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_bios.h:
-C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_core.h:
-C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_input.h:
-C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_irq.h:
-C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_math.h:
-C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_oam.h:
-C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_tte.h:
-C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_surface.h:
-C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_video.h:
-C:/dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_nocash.h:
-C:/dev/pf_lp/butano/hw/include/bn_hw_memory.h:
-C:/dev/pf_lp/butano/hw/3rd_party/agbabi/include/aeabi.h:
-C:/dev/pf_lp/butano/hw/3rd_party/agbabi/include/agbabi.h:
-C:/dev/pf_lp/butano/hw/include/bn_hw_bg_blocks.h:
-C:/dev/pf_lp/butano/hw/include/bn_hw_bg_blocks_constants.h:
-C:/dev/pf_lp/butano/include/bn_tile.h:
-C:/dev/pf_lp/butano/src/bn_bg_maps.cpp.h:
-C:/dev/pf_lp/butano/include/bn_bg_maps.h:
-C:/dev/pf_lp/butano/src/bn_bg_tiles.cpp.h:
-C:/dev/pf_lp/butano/include/bn_bg_tiles.h:
-C:/dev/pf_lp/butano/src/bn_regular_bg_map_ptr.cpp.h:
-C:/dev/pf_lp/butano/include/bn_regular_bg_map_ptr.h:
-C:/dev/pf_lp/butano/include/bn_span.h:
-C:/dev/pf_lp/butano/include/bn_optional.h:
-C:/dev/pf_lp/butano/include/bn_regular_bg_map_cell.h:
-C:/dev/pf_lp/butano/include/bn_bg_palette_ptr.h:
-C:/dev/pf_lp/butano/include/bn_fixed.h:
-C:/dev/pf_lp/butano/include/bn_compare.h:
-C:/dev/pf_lp/butano/include/bn_regular_bg_item.h:
-C:/dev/pf_lp/butano/include/bn_fixed_point.h:
-C:/dev/pf_lp/butano/include/bn_point.h:
-C:/dev/pf_lp/butano/include/bn_fixed_point_fwd.h:
-C:/dev/pf_lp/butano/include/bn_bg_palette_item.h:
-C:/dev/pf_lp/butano/include/bn_color.h:
-C:/dev/pf_lp/butano/include/bn_bpp_mode.h:
-C:/dev/pf_lp/butano/include/bn_compression_type.h:
-C:/dev/pf_lp/butano/include/bn_regular_bg_map_item.h:
-C:/dev/pf_lp/butano/include/bn_size.h:
-C:/dev/pf_lp/butano/include/bn_regular_bg_tiles_item.h:
-C:/dev/pf_lp/butano/include/bn_tile.h:
-C:/dev/pf_lp/butano/include/bn_regular_bg_tiles_ptr.h:
-C:/dev/pf_lp/butano/src/bn_regular_bg_map_item.cpp.h:
-C:/dev/pf_lp/butano/include/bn_regular_bg_map_item.h:
-C:/dev/pf_lp/butano/hw/include/bn_hw_decompress.h:
-C:/dev/pf_lp/butano/hw/3rd_party/cult-of-gba-bios/include/cult-of-gba-bios.h:
-C:/dev/pf_lp/butano/src/bn_regular_bg_tiles_ptr.cpp.h:
-C:/dev/pf_lp/butano/include/bn_regular_bg_tiles_item.h:
-C:/dev/pf_lp/butano/src/bn_regular_bg_tiles_item.cpp.h:
-C:/dev/pf_lp/butano/src/bn_affine_bg_map_ptr.cpp.h:
-C:/dev/pf_lp/butano/include/bn_affine_bg_map_ptr.h:
-C:/dev/pf_lp/butano/include/bn_affine_bg_map_cell.h:
-C:/dev/pf_lp/butano/include/bn_affine_bg_item.h:
-C:/dev/pf_lp/butano/include/bn_affine_bg_map_item.h:
-C:/dev/pf_lp/butano/include/bn_affine_bg_tiles_item.h:
-C:/dev/pf_lp/butano/include/bn_affine_bg_tiles_ptr.h:
-C:/dev/pf_lp/butano/src/bn_affine_bg_map_item.cpp.h:
-C:/dev/pf_lp/butano/include/bn_affine_bg_map_item.h:
-C:/dev/pf_lp/butano/src/bn_affine_bg_tiles_ptr.cpp.h:
-C:/dev/pf_lp/butano/include/bn_affine_bg_tiles_item.h:
-C:/dev/pf_lp/butano/src/bn_affine_bg_tiles_item.cpp.h:
-C:/dev/pf_lp/butano/include/bn_log.h:
-C:/dev/pf_lp/butano/include/bn_config_log.h:
+bn_bg_blocks_manager.o: \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_bg_blocks_manager.cpp \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_bg_blocks_manager.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_span.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_array.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_assert.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_config_assert.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_common.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/include/bn_hw_common.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_config_doxygen.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_sstream.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_fixed_fwd.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_string_fwd.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_istring_base.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_algorithm.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_functional.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_alignment.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_type_traits.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_assert_callback_type.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_utility.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_iterator.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_array_fwd.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_span_fwd.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_optional.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_memory_alias.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_config_log.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_log_backend.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_map_cell.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_map_cell.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_limits.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_string_view.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_bgs_manager.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_fixed_fwd.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_optional_fwd.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_fixed_point_fwd.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_config_bg_blocks.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_big_map_canvas_size.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/include/bn_hw_dma.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/include/bn_hw_tonc.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_common.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_types.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_memmap.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_memdef.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_bios.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_core.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_input.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_irq.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_math.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_oam.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_tte.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_surface.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_video.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_nocash.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/include/bn_hw_memory.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/agbabi/include/aeabi.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/agbabi/include/agbabi.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/include/bn_hw_bg_blocks.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/include/bn_hw_bg_blocks_constants.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_tile.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_bg_maps.cpp.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_bg_maps.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_bg_tiles.cpp.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_bg_tiles.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_regular_bg_map_ptr.cpp.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_map_ptr.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_span.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_optional.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_map_cell.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_bg_palette_ptr.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_fixed.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_compare.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_item.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_fixed_point.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_point.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_fixed_point_fwd.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_bg_palette_item.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_color.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_bpp_mode.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_compression_type.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_map_item.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_size.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_tiles_item.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_tile.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_tiles_ptr.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_regular_bg_map_item.cpp.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_map_item.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/include/bn_hw_decompress.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/cult-of-gba-bios/include/cult-of-gba-bios.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_regular_bg_tiles_ptr.cpp.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_tiles_item.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_regular_bg_tiles_item.cpp.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_affine_bg_map_ptr.cpp.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_map_ptr.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_map_cell.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_item.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_map_item.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_tiles_item.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_tiles_ptr.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_affine_bg_map_item.cpp.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_map_item.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_affine_bg_tiles_ptr.cpp.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_tiles_item.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_affine_bg_tiles_item.cpp.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_log.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_config_log.h
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_bg_blocks_manager.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_span.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_array.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_assert.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_config_assert.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_common.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/include/bn_hw_common.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_config_doxygen.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_sstream.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_fixed_fwd.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_string_fwd.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_istring_base.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_algorithm.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_functional.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_alignment.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_type_traits.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_assert_callback_type.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_utility.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_iterator.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_array_fwd.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_span_fwd.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_optional.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_memory_alias.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_config_log.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_log_backend.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_map_cell.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_map_cell.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_limits.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_string_view.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_bgs_manager.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_fixed_fwd.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_optional_fwd.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_fixed_point_fwd.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_config_bg_blocks.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_big_map_canvas_size.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/include/bn_hw_dma.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/include/bn_hw_tonc.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_common.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_types.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_memmap.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_memdef.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_bios.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_core.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_input.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_irq.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_math.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_oam.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_tte.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_surface.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_video.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/libtonc/include/tonc_nocash.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/include/bn_hw_memory.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/agbabi/include/aeabi.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/agbabi/include/agbabi.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/include/bn_hw_bg_blocks.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/include/bn_hw_bg_blocks_constants.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_tile.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_bg_maps.cpp.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_bg_maps.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_bg_tiles.cpp.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_bg_tiles.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_regular_bg_map_ptr.cpp.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_map_ptr.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_span.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_optional.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_map_cell.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_bg_palette_ptr.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_fixed.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_compare.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_item.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_fixed_point.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_point.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_fixed_point_fwd.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_bg_palette_item.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_color.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_bpp_mode.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_compression_type.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_map_item.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_size.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_tiles_item.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_tile.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_tiles_ptr.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_regular_bg_map_item.cpp.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_map_item.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/include/bn_hw_decompress.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/hw/3rd_party/cult-of-gba-bios/include/cult-of-gba-bios.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_regular_bg_tiles_ptr.cpp.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_tiles_item.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_regular_bg_tiles_item.cpp.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_affine_bg_map_ptr.cpp.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_map_ptr.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_map_cell.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_item.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_map_item.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_tiles_item.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_tiles_ptr.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_affine_bg_map_item.cpp.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_map_item.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_affine_bg_tiles_ptr.cpp.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_affine_bg_tiles_item.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/src/bn_affine_bg_tiles_item.cpp.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_log.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_config_log.h:
