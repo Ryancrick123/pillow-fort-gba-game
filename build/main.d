@@ -42,6 +42,7 @@ main.o: C:/Users/ryanc/Development/GBA_dev/pf_lp/src/main.cpp \
  C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_map_ptr.h \
  C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_map_cell.h \
  C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_map_cell_info.h \
+ C:/Users/ryanc/Development/GBA_dev/pf_lp/include/player.h \
  C:/Users/ryanc/Development/GBA_dev/pf_lp/build/bn_sprite_items_temp_ry.h \
  C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_sprite_item.h \
  C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_sprite_shape_size.h \
@@ -100,6 +101,7 @@ C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_log_backend.h:
 C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_map_ptr.h:
 C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_map_cell.h:
 C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_regular_bg_map_cell_info.h:
+C:/Users/ryanc/Development/GBA_dev/pf_lp/include/player.h:
 C:/Users/ryanc/Development/GBA_dev/pf_lp/build/bn_sprite_items_temp_ry.h:
 C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_sprite_item.h:
 C:/Users/ryanc/Development/GBA_dev/pf_lp/butano/include/bn_sprite_shape_size.h:

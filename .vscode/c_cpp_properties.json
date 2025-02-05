@@ -3,7 +3,10 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/butano/include",
+                "${workspaceFolder}/build",
+                "${workspaceFolder}/include"
             ],
             "defines": [
                 "_DEBUG",
