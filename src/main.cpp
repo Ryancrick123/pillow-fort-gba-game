@@ -8,44 +8,52 @@
 #include "bn_regular_bg_map_cell_info.h"
 
 #include "player.h"
+#include "collision_handler.h"
 
 #include "bn_sprite_items_temp_ry.h"
-#include "bn_regular_bg_items_floor.h"
+#include "bn_regular_bg_items_test_map_floor.h"
+#include "bn_regular_bg_items_test_map_world.h"
+#include "bn_regular_bg_items_test_map_collision.h"
 
 // Forward declaration of log_stuff
 void log_stuff(bn::sprite_ptr& player, bn::regular_bg_ptr& background, bn::camera_ptr& cam);
 
 
-int main()
-{
+int main() {
     bn::core::init();
 
     bn::camera_ptr camera = bn::camera_ptr::create(0, 0);
 
-    // Create player object
-    
-    
-    bn::regular_bg_ptr map_bg = bn::regular_bg_items::floor.create_bg(0, 0);
-    bn::regular_bg_map_item map_item = bn::regular_bg_items::floor.map_item();
-    bn::regular_bg_map_cell invalid_map_cell = map_item.cell(0, 0);
-    int invalid_tile_index = bn::regular_bg_map_cell_info(invalid_map_cell).tile_index();
+    // collision setup
+    bn::regular_bg_item collision_bg_item = bn::regular_bg_items::test_map_collision;
+    bn::regular_bg_ptr collision_bg = collision_bg_item.create_bg(0, 0);
+    collision_bg.set_camera(camera);
+    CollisionHandler collision_handler(collision_bg_item);
 
-    Player player(camera);
+    // floor setup
+    bn::regular_bg_ptr map_bg = bn::regular_bg_items::test_map_floor.create_bg(0, 0);
+    map_bg.set_camera(camera);
 
 
-    bn::sprite_ptr temp_test = bn::sprite_items::temp_ry.create_sprite(100, 40);
+    // world setup
+    bn::regular_bg_ptr world_bg = bn::regular_bg_items::test_map_world.create_bg(0, 0);
+    world_bg.set_camera(camera);
 
-    bn::point player_map_position(0, 0);
+    // player setup
+    Player player(camera, collision_handler);
+
+    //bn::sprite_ptr temp_test = bn::sprite_items::temp_ry.create_sprite(100, 40);
 
     while(true)
     {
-        bn::point new_position = player_map_position;
 
-        temp_test.set_camera(camera);
-        map_bg.set_camera(camera);
+        //temp_test.set_camera(camera);
+        
+
+        player.update(true);
 
         //log_stuff(temp_ry_sprite, map_bg, camera);
-
+        /*
         // Move the player sprite
         if(bn::keypad::left_held())
         {
@@ -65,6 +73,8 @@ int main()
         }
 
         // getting cell of next move
+        // set new position here
+        
         bn::regular_bg_map_cell new_map_cell = map_item.cell((new_position.x() % 64 + 64) % 64, (new_position.y() % 64 + 64) % 64);
         int new_tile_index = bn::regular_bg_map_cell_info(new_map_cell).tile_index();
         BN_LOG("New tile index: ", new_tile_index);
@@ -81,9 +91,10 @@ int main()
         bn::fixed player_y = (player_map_position.y() * 8) - (map_item.dimensions().height() * 4) + 4;
 
         player.update(player_x, player_y);
-        camera.set_position(player_x, player_y);
+        camera.set_position(player_x, player_y);*/
 
         bn::core::update();
+        
     }
 }
 
