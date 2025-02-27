@@ -40,13 +40,14 @@ int main() {
     world_bg.set_camera(camera);
 
     // player setup
-    Player player(camera, collision_handler);
+    Player player(camera, collision_handler, bn::sprite_items::temp_ry);
 
-    //bn::sprite_ptr temp_test = bn::sprite_items::temp_ry.create_sprite(100, 40);
+    Player player2(camera, collision_handler, bn::sprite_items::temp_ry, 100, 20);
 
     while(true)
     {
-        player.update(true);
+        player.update();
+        player2.update();
 
         bn::core::update();
     }
