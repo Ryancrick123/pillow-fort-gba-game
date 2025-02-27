@@ -2,9 +2,9 @@
 #define PLAYER_H
 
 #include "bn_sprite_ptr.h"
-#include "collision_handler.h"
+#include "bn_sprite_item.h"
 
-#include "bn_sprite_items_temp_ry.h"
+#include "collision_handler.h"
 
 enum direction {
     UP,

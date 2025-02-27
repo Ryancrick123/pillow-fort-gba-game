@@ -17,6 +17,8 @@ void CollisionHandler::setup_map(bn::regular_bg_item& new_collision_bg_item) {
     height = collision_bg_item.map_item().dimensions().height() * 8;
 }
 
+// @param position: The position to check for collision
+// @return True if collision detected, false if no collision
 bool CollisionHandler::check_collision(int x, int y) {
     // adding width/2 standardizes so 0,0 is in the center of the screen 
     int cell_x = (x % width + width + width / 2) % width / 8;

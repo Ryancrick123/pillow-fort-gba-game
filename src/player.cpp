@@ -27,7 +27,6 @@ void Player::update(bool check_input) {
     BN_LOG("Sprite position: ", sprite.x(), " ", sprite.y());
 }
 
-// this is duplicated, gotta move it all to the player class
 void Player::move() {
 
     bn::fixed_point new_position = sprite.position();
@@ -83,7 +82,8 @@ void Player::set_direction(direction new_direction) {
 }
 
 // Check an area around the bottom of the player sprite for collision
-// @return true if collision detected, false if no collision
+// @param position: The position to check for collision
+// @return True if collision detected, false if no collision
 bool Player::player_collision(bn::fixed_point position) {
     // +- small numbers to hardcode offset accounting for empty space
     // bottom
