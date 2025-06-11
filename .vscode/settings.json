@@ -1,3 +1,10 @@
 {
-    "C_Cpp.default.compilerPath": "arm-none-eabi-gcc.exe"
+    "C_Cpp.default.compilerPath": "arm-none-eabi-gcc.exe",
+    "files.associations": {
+        "atomic": "cpp",
+        "type_traits": "cpp",
+        "xutility": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "enabledIfIncludesResolve",
+    "github.copilot.nextEditSuggestions.enabled": false
 }
