@@ -11,7 +11,7 @@ Actor::Actor(bn::camera_ptr& cam, CollisionHandler& collision_handler, bn::sprit
 
 void Actor::update()
 {
-    // do per-frame checks here, I guess
+    
 }
 
 // Check an area around the bottom of the sprite for collision
@@ -45,20 +45,20 @@ void Actor::set_current_direction(direction new_direction)
 {
     if (current_direction == new_direction) return;
 
-    if (new_direction == UP) {
-        current_sprite = sprite_item.create_sprite(current_sprite.x(), current_sprite.y(), 2);
+   if (new_direction == UP) {
+        current_sprite.set_tiles(sprite_item.tiles_item(), 2);
         current_direction = UP;
     }
     else if (new_direction == DOWN) {
-        current_sprite = sprite_item.create_sprite(current_sprite.x(), current_sprite.y(), 0);
+        current_sprite.set_tiles(sprite_item.tiles_item(), 0);
         current_direction = DOWN;
     }
     else if (new_direction == LEFT) {
-        current_sprite = sprite_item.create_sprite(current_sprite.x(), current_sprite.y(), 3);
+        current_sprite.set_tiles(sprite_item.tiles_item(), 3);
         current_direction = LEFT;
     }
     else if (new_direction == RIGHT) {
-        current_sprite = sprite_item.create_sprite(current_sprite.x(), current_sprite.y(), 1);
+        current_sprite.set_tiles(sprite_item.tiles_item(), 1);
         current_direction = RIGHT;
     }
 }
@@ -70,7 +70,23 @@ const direction& Actor::get_current_direction() const
 
 void Actor::set_position(bn::fixed_point new_position)
 {
+    // check if new position is a different direction and set the direction accordingly
+    if (int(new_position.y()) < int(current_sprite.position().y())) {
+        set_current_direction(UP);
+    }
+    else if (int(new_position.y()) > int(current_sprite.position().y())) {
+        set_current_direction(DOWN);
+    }
+    else if (int(new_position.x()) < int(current_sprite.position().x())) {
+        set_current_direction(LEFT);
+    }
+    else if (int(new_position.x()) > int(current_sprite.position().x())) {
+        set_current_direction(RIGHT);
+    }
+
     current_sprite.set_position(new_position);
+    
+
 }
 
 const bn::fixed_point& Actor::get_position() const
