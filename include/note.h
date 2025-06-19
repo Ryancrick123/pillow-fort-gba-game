@@ -29,9 +29,10 @@ public:
     bool to_delete();
     
 private:
+    bn::sprite_ptr select_sprite();
     bool marked_for_deletion = false;
-    bn::sprite_ptr current_sprite;
     note_data current_note_data;
+    bn::sprite_ptr current_sprite;
 };
 
 #endif // NOTE_H

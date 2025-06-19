@@ -3,7 +3,8 @@
     "files.associations": {
         "atomic": "cpp",
         "type_traits": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "initializer_list": "cpp"
     },
     "C_Cpp.errorSquiggles": "enabledIfIncludesResolve",
     "github.copilot.nextEditSuggestions.enabled": false

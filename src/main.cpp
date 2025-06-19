@@ -11,6 +11,8 @@
 #include "bn_vector.h"
 #include "bn_timer.h"
 #include "bn_timers.h"
+#include "bn_blending.h"
+#include "bn_blending_actions.h"
 
 #include "player.h"
 #include "collision_handler.h"
@@ -22,7 +24,10 @@
 #include "bn_regular_bg_items_test_map_floor.h"
 #include "bn_regular_bg_items_test_map_world.h"
 #include "bn_regular_bg_items_test_map_collision.h"
+#include "bn_regular_bg_items_fretboard.h"
 #include "bn_sprite_items_common_variable_8x16_font.h"
+
+#include "bn_dmg_music_items_joan_test.h"
 
 
 // Forward declaration of log_stuff
@@ -61,21 +66,20 @@ int main()
     text_generator.set_center_alignment();
 
     bn::vector<bn::sprite_ptr, 32> text_sprites;
-    text_generator.generate(0, 0, "pillow FART", text_sprites);
-
-    Note test = Note(camera, { bn::keypad::key_type::A, 0, 1, normal });
 
     while(true)
     {
         player.update();
-        test.update();
 
         if(bn::keypad::a_pressed()) {
             text_sprites.clear();
-            text_generator.generate(0, 50, npc_dialogue::test[0], text_sprites);
         }
         if(bn::keypad::b_pressed()) {
+            text_sprites.clear();
+            text_generator.generate(0, 0, "Playing song", text_sprites);
             play_rhythm_game(songs::test_song, camera);
+            text_sprites.clear();
+            text_generator.generate(0, 0, "Song complete", text_sprites);
         }
 
         bn::core::update();
@@ -94,11 +98,26 @@ void log_stuff(bn::sprite_ptr& player, bn::regular_bg_ptr& background, bn::camer
 
 void play_rhythm_game(const songs::song& song, bn::camera_ptr& cam)
 {
-    // vector used for dynamic allocation - array would create 100 notes and I'd rather not blow up my GBA's memory
+    // set up fretboard for hit detection
+    bn::regular_bg_ptr fretboard = bn::regular_bg_items::fretboard.create_bg(0, 0);
+    fretboard.set_camera(cam);
+    fretboard.set_blending_enabled(true);
+    bn::blending::set_transparency_alpha(0);
+    bn::blending_transparency_alpha_to_action transparency_action(60, 1);
+    while(int(bn::blending::transparency_alpha()) < 1)
+    {
+        transparency_action.update();
+        bn::core::update();
+    }
+    fretboard.set_blending_enabled(false);
+
+    // vector used for dynamic creation of notes
     bn::vector<Note, 100> active_notes;
     int current_note_index = 0;
 
     bn::timer song_timer;
+    bn::music_items::joan_test.play(0.5, false);
+    //bn::dmg_music_items::joan_test.play();
 
     // rhythm game loop
     while(true)
@@ -115,7 +134,7 @@ void play_rhythm_game(const songs::song& song, bn::camera_ptr& cam)
             current_note_index++;
         }
 
-        // for loop de-increments (is that a word?) because deletion may change the index of later notes in the loop
+        // de-increments (is that a word?) because deletion may change the index of later notes in the loop
         for (int i = active_notes.size() - 1; i >= 0; i--)
         {
             active_notes[i].update();
