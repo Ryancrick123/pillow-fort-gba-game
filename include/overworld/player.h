@@ -9,7 +9,7 @@
 
 class Player : public Actor {
 public:
-    Player(bn::camera_ptr& cam, CollisionHandler& collision_handler, bn::sprite_item sprite_item, int x = 0, int y = 0);
+    Player(CollisionHandler& collision_handler, bn::sprite_item sprite_item, int x = 0, int y = 0);
     void update();
 };
 

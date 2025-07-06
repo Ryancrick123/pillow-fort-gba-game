@@ -1,12 +1,11 @@
 #include "actor.h"
 
-Actor::Actor(bn::camera_ptr& cam, CollisionHandler& collision_handler, bn::sprite_item sprite_item, int x, int y) :
+Actor::Actor(CollisionHandler& collision_handler, bn::sprite_item sprite_item, int x, int y) :
     collision_handler(collision_handler),
     sprite_item(sprite_item),
     current_sprite(sprite_item.create_sprite(x, y, 0)),
     current_direction(DOWN)
 {
-    current_sprite.set_camera(cam);
 }
 
 void Actor::update()
@@ -86,7 +85,6 @@ void Actor::set_position(bn::fixed_point new_position)
 
     current_sprite.set_position(new_position);
     
-
 }
 
 const bn::fixed_point& Actor::get_position() const

@@ -18,7 +18,7 @@ enum direction {
 // Base class for all actors to inherit
 class Actor {
 public:
-    Actor(bn::camera_ptr& cam, CollisionHandler& collision_handler, bn::sprite_item sprite_item, int x = 0, int y = 0);
+    Actor(CollisionHandler& collision_handler, bn::sprite_item sprite_item, int x = 0, int y = 0);
     void update();
     void set_current_direction(direction new_direction);
     const direction& get_current_direction() const;

@@ -23,15 +23,16 @@ struct note_data {
 class Note {
     
 public:
-    Note(bn::camera_ptr& cam, note_data note_data);
+    Note(note_data note_data);
     void update();
     void set_position();
     bool to_delete();
+    const bn::fixed_point& get_position() const;
+    note_data current_note_data;
     
 private:
     bn::sprite_ptr select_sprite();
     bool marked_for_deletion = false;
-    note_data current_note_data;
     bn::sprite_ptr current_sprite;
 };
 

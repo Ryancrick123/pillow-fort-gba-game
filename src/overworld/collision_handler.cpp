@@ -1,7 +1,6 @@
 #include "collision_handler.h"
 
 #include "bn_regular_bg_map_cell_info.h"
-#include "bn_log.h"
 
 CollisionHandler::CollisionHandler(bn::regular_bg_item& bg_item) : collision_bg_item(bg_item) {
     setup_map(bg_item);
@@ -23,8 +22,6 @@ bool CollisionHandler::check_collision(int x, int y) {
     // adding width/2 standardizes so 0,0 is in the center of the screen 
     int cell_x = (x % width + width + width / 2) % width / 8;
     int cell_y = (y % height + height + height / 2) % width / 8;
-
-    BN_LOG("cell: ",  cell_x, " ", cell_y);
 
     // Get the index of the tile at the specified cell and compare to see if it's invalid
     bn::regular_bg_map_cell target_cell = collision_bg_item.map_item().cell(cell_x, cell_y);
