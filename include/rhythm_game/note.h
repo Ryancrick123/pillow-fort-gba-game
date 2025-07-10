@@ -7,16 +7,10 @@
 #include "bn_sprite_ptr.h"
 #include "bn_sprite_item.h"
 
-enum note_type {
-        normal,
-        bonus
-    };
-
 struct note_data {
         bn::keypad::key_type button;
         int timestamp;
         int descent_speed;
-        note_type type;
     };
 
 // Base class for all actors to inherit

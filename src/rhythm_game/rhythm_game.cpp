@@ -26,7 +26,7 @@ void Rhythm_Game::update()
     {
         setup_fretboard();
         song_timer.restart();
-        bn::music_items::joan_test.play(1.0, false);
+        bn::music_items::joan.play(1.0, false);
         setup_done = true;
         return;
     }
