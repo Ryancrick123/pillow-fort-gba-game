@@ -12,6 +12,7 @@ class ChartGenerator:
     def parse_xm(self):
         self.output = ""
         self.cpp_header()
+        songlist = []
         for filename in os.listdir(self.directory):
             self.filename = os.path.join(self.directory, filename)
             if filename.endswith('.xm'):
@@ -26,7 +27,10 @@ class ChartGenerator:
 
     def parse_song_name(self):
         name = os.path.basename(self.filename)
-        self.name_underscore = name.split('.')[0]
+        self.unlock_requirement = ord(name.split('_')[0]) - 97
+        self.audio_name  = name.split('.')[0]
+        name_without_unlock = name.split('_', 1)[1]
+        self.name_underscore = name_without_unlock.split('.')[0]
         name_spaces = self.name_underscore.replace('_', ' ')
         self.song_name = string.capwords(name_spaces)
         print(f"Song Name: {self.song_name}")
@@ -157,14 +161,15 @@ class ChartGenerator:
 
         # Process notes into C++ config format
         length = len(notes)
-        output = f"    constexpr bn::array<note_data, {length}> {self.name_underscore}_data = {{{{\n"
+        output = f"    #ifndef {self.name_underscore.upper()}_OVERRIDE\n"
+        output += f"    constexpr bn::array<note_data, {length}> {self.name_underscore}_data = {{{{\n"
 
         for i, note in enumerate(notes):
             button = note[0]
             row = note[1]
             speed = note[2]
 
-            line = f"        {{{button}, {row}, {speed}}}" # apparently double {{ escapes, so this gives us single {} around the values
+            line = f"        {{{button}, {row}, {speed}}}"
 
             if i < length - 1:
                 line += ","
@@ -180,8 +185,11 @@ class ChartGenerator:
         output += f"        {self.name_underscore}_data.size(),\n"
         output += f"        {self.default_tempo},\n"
         output += f"        \"{self.song_name}\",\n"
-        output += f"        normal\n"
-        output += "    };\n\n"
+        output += f"        normal,\n"
+        output += f"        {self.unlock_requirement},\n"
+        output += f"        bn::music_items::{self.audio_name}\n"
+        output += "    };\n"
+        output += "    #endif\n\n"
         self.output += output
 
     def cpp_header(self):
@@ -204,7 +212,7 @@ namespace songs
 
     def write_to_file(self):
         try:
-            with open("include/rhythm_game/song_data.h", "w") as file:
+            with open("include/rhythm_game/song_data/song_data.h", "w") as file:
                 file.write(self.output)
             print("Song charts successfully generated and written to include/rhythm_game/song_data.h")
         except IOError as e:

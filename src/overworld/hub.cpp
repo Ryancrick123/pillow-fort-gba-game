@@ -10,6 +10,9 @@
 #include "bn_regular_bg_items_test_map_floor.h"
 #include "bn_regular_bg_items_test_map_world.h"
 
+#include "chart_override.h"
+#include "song_data.h"
+
 Hub::Hub() :
     collision_bg_item(bn::regular_bg_items::test_map_collision),
     map_bg(bn::regular_bg_items::test_map_floor.create_bg(0, 0)),
@@ -33,7 +36,7 @@ State *Hub::next_state()
 {
     if(go_to_rhythm_game)
     {
-        return new Rhythm_Game(songs::test_song);
+        return new Rhythm_Game(songs::joan);
     }
     return nullptr;
 }

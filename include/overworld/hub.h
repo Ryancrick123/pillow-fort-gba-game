@@ -4,7 +4,6 @@
 #include "state.h"
 
 #include "bn_regular_bg_ptr.h"
-
 #include "player.h"
 #include "collision_handler.h"
 

@@ -28,14 +28,6 @@ Rhythm_Game::Rhythm_Game(const songs::song& song_selection) :
 void Rhythm_Game::update()
 {
     song_setup();
-
-    // Tracking the biggest combo
-    if (current_combo > max_combo)
-    {
-        max_combo = current_combo;
-        BN_LOG("New max combo: ", max_combo);
-    }
-
     
     int elapsed_beats = (song_timer.elapsed_ticks() + note_offset) / ticks_per_beat;
     
@@ -60,6 +52,13 @@ void Rhythm_Game::update()
     }
 
     check_inputs();
+
+    // Tracking the biggest combo
+    if (current_combo > max_combo)
+    {
+        max_combo = current_combo;
+        BN_LOG("New max combo: ", max_combo);
+    }
 
     // Check for end of song
     if (current_note_index >= song.size && active_notes.empty()) 
@@ -99,7 +98,7 @@ void Rhythm_Game::song_setup()
     {
         setup_fretboard();
         song_timer.restart();
-        bn::music_items::joan.play(1.0, false); // TODO - select song from menu
+        song.audio.play(1.0, false); // TODO - select song from menu
         setup_done = true;
         return;
     }
