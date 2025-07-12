@@ -6,6 +6,8 @@
 #include "bn_regular_bg_ptr.h"
 #include "songs.h"
 #include "bn_keypad.h"
+#include "bn_timers.h"
+#include "bn_sprite_text_generator.h"
 
 class Rhythm_Game : public State
 {
@@ -29,8 +31,17 @@ private:
     int hit_good = 18;
     int hit_sloppy = 24;
     int score = 0;
+    int current_combo = 0;
+    int max_combo = 0;
+    int ticks_per_beat = 0;
+    int note_offset = 148 * bn::timers::ticks_per_frame(); // offset to account for note travel time
+    bn::sprite_text_generator text_generator;
+    bn::vector<bn::sprite_ptr, 32> text_sprites;
     void setup_fretboard();
+    void song_setup();
     void check_for_hit(bn::keypad::key_type button);
+    void check_inputs();
+    
 };
 
-#endif
+#endif // RHYTHM_GAME_H

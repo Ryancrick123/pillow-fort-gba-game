@@ -4,20 +4,10 @@
 #include "bn_sprite_text_generator.h"
 #include "state.h"
 #include "hub.h"
-//#include "bn_vector.h"
 
-
-
-
-#include "songs.h"
-#include "npc_dialogue.h"
-
-#include "hub.h"
 #include "rhythm_game.h"
 
-
 #include "bn_sprite_items_common_variable_8x16_font.h"
-
 
 int main() 
 {
