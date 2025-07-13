@@ -5,6 +5,7 @@
 #include "bn_blending_actions.h"
 #include "bn_music_items.h"
 #include "bn_log.h"
+#include "bn_string.h"
 #include "score_screen.h"
 
 #include "bn_regular_bg_items_fretboard.h"
@@ -19,6 +20,9 @@ Rhythm_Game::Rhythm_Game(const songs::song& song_selection) :
 {
     fretboard_bg.set_blending_enabled(true);
     bn::blending::set_transparency_alpha(0);
+
+    text_generator.set_center_alignment();
+    display_text();
 
     // BPM we're setting is to be multiplied by 4 for this calculation
     int beats_per_second = song.tempo * 4 / 60;
@@ -39,26 +43,8 @@ void Rhythm_Game::update()
         current_note_index++;
     }
 
-    // checking missed notes for deletion - de-increments (is that a word?) because deletion may change the index of later notes in the loop
-    for (int i = active_notes.size() - 1; i >= 0; i--)
-    {
-        active_notes[i].update();
-
-        if (active_notes[i].to_delete()) 
-        {
-            active_notes.erase(active_notes.begin() + i);
-            current_combo = 0;
-        }
-    }
-
+    check_for_missed_notes();
     check_inputs();
-
-    // Tracking the biggest combo
-    if (current_combo > max_combo)
-    {
-        max_combo = current_combo;
-        BN_LOG("New max combo: ", max_combo);
-    }
 
     // Check for end of song
     if (current_note_index >= song.size && active_notes.empty()) 
@@ -69,6 +55,8 @@ void Rhythm_Game::update()
         // TODO - throw this into a function and do some score stuff, combos etc
         go_to_hub = true;
     }
+
+    display_text();
 }
 
 State *Rhythm_Game::next_state()
@@ -101,51 +89,6 @@ void Rhythm_Game::song_setup()
         song.audio.play(1.0, false); // TODO - select song from menu
         setup_done = true;
         return;
-    }
-}
-
-void Rhythm_Game::check_for_hit(bn::keypad::key_type button)
-{
-
-    for(int i  = 0; i < active_notes.size() ; i++)
-    {
-        // checking if > 0 here bc it removes the need to normalise the hit position if it's in the top half
-        if(active_notes[i].current_note_data.button == button 
-            && active_notes[i].get_position().y() > 0)
-        {
-            int distance_from_hit_zone = abs(int(active_notes[i].get_position().y()) - hit_zone);
-
-            BN_LOG(active_notes[i].get_position().y());
-
-            if(distance_from_hit_zone <= hit_perfect/2)
-            {
-                BN_LOG("Perfect!");
-                score += 100;
-                active_notes.erase(active_notes.begin() + i);
-                current_combo++;
-            }
-            else if(distance_from_hit_zone <= hit_great/2)
-            {
-                BN_LOG("Great!");
-                score += 75;
-                active_notes.erase(active_notes.begin() + i);
-                current_combo++;
-            }
-            else if(distance_from_hit_zone <= hit_good/2)
-            {
-                BN_LOG("Good!");
-                score += 50;
-                active_notes.erase(active_notes.begin() + i);
-                current_combo++;
-            }
-            else if(distance_from_hit_zone <= hit_sloppy/2)
-            {
-                BN_LOG("Sloppy!");
-                score += 25;
-                active_notes.erase(active_notes.begin() + i);
-                current_combo++;
-            }
-        }
     }
 }
 
@@ -187,4 +130,121 @@ void Rhythm_Game::check_inputs()
             check_for_hit(bn::keypad::key_type::RIGHT);
         }
     }
+}
+
+void Rhythm_Game::check_for_hit(bn::keypad::key_type button)
+{
+    bool hit = false;
+    for(int i  = 0; i < active_notes.size() ; i++)
+    {
+        // checking if > 0 here bc it removes the need to normalise the hit position if it's in the top half
+        if(active_notes[i].current_note_data.button == button 
+            && active_notes[i].get_position().y() > 0)
+        {
+            int distance_from_hit_zone = abs(int(active_notes[i].get_position().y()) - hit_zone);
+
+            if(distance_from_hit_zone <= hit_perfect/2)
+            {
+                BN_LOG("Perfect!");
+                update_score(100);
+                active_notes.erase(active_notes.begin() + i);
+                update_combo();
+                hit = true;
+            }
+            else if(distance_from_hit_zone <= hit_great/2)
+            {
+                BN_LOG("Great!");
+                update_score(75);
+                active_notes.erase(active_notes.begin() + i);
+                update_combo();
+                hit = true;
+            }
+            else if(distance_from_hit_zone <= hit_good/2)
+            {
+                BN_LOG("Good!");
+                update_score(50);
+                active_notes.erase(active_notes.begin() + i);
+                update_combo();
+                hit = true;
+            }
+            else if(distance_from_hit_zone <= hit_sloppy/2)
+            {
+                BN_LOG("Sloppy!");
+                update_score(25);
+                active_notes.erase(active_notes.begin() + i);
+                update_combo();
+                hit = true;
+            }
+        }
+    }
+    if(!hit)
+    {
+        end_combo();
+    }
+}
+
+void Rhythm_Game::check_for_missed_notes()
+{
+    // de-increments (is that a word?) because deletion may change the index of later notes in the loop
+    for (int i = active_notes.size() - 1; i >= 0; i--)
+    {
+        active_notes[i].update();
+
+        if (active_notes[i].to_delete()) 
+        {
+            active_notes.erase(active_notes.begin() + i);
+            end_combo();
+        }
+    }
+}
+
+void Rhythm_Game::update_score(int score_to_add)
+{
+    if (current_combo >= 40)
+    {
+        score_to_add *= 4;
+    }
+    else if (current_combo >= 30)
+    {
+        score_to_add *= 3;
+    }
+    else if (current_combo >= 20)
+    {
+        score_to_add *= 2;
+    }
+    else if (current_combo >= 10)
+    {
+        score_to_add *= 1.5;
+    }
+    
+    score += score_to_add;
+}
+
+void Rhythm_Game::update_combo()
+{
+    current_combo++;
+    if (current_combo > max_combo)
+    {
+        max_combo = current_combo;
+    }
+}
+
+// short method, but more readable so it felt better
+void Rhythm_Game::end_combo()
+{
+    current_combo = 0;
+}
+
+void Rhythm_Game::display_text()
+{
+    text_sprites.clear();
+
+    // this seems to be the cleanest way to get things into bn::strings
+    bn::string<32> score_string = "Score: ";
+    score_string += bn::to_string<10>(score);
+    bn::string<32> max_combo_string = "Combo: ";
+    max_combo_string += bn::to_string<10>(current_combo);
+
+    text_generator.generate(-60, 72, score_string, text_sprites);
+    text_generator.generate(60, 72, max_combo_string, text_sprites);
 }

@@ -41,7 +41,11 @@ private:
     void song_setup();
     void check_for_hit(bn::keypad::key_type button);
     void check_inputs();
-    
+    void check_for_missed_notes();
+    void update_score(int score_to_add);
+    void update_combo();
+    void end_combo();
+    void display_text();
 };
 
 #endif // RHYTHM_GAME_H
