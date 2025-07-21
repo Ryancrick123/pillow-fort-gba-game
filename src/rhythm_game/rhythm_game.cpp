@@ -43,7 +43,7 @@ void Rhythm_Game::update()
         current_note_index++;
     }
 
-    check_for_missed_notes();
+    update_notes();
     check_inputs();
 
     // Check for end of song
@@ -57,13 +57,32 @@ void Rhythm_Game::update()
     }
 
     display_text();
+
+    if (hit_popup.has_value())
+    {
+        hit_popup->update();
+        if (hit_popup->to_delete())
+        {
+            hit_popup.reset();
+        }
+    }
 }
 
 State *Rhythm_Game::next_state()
 {
     if(go_to_hub)
     {
-        return new Score_Screen(score, max_combo);
+        score_data data = {
+            score,
+            max_combo,
+            notes_hit,
+            notes_missed,
+            perfect_notes,
+            great_notes,
+            good_notes,
+            poor_notes
+        };
+        return new Score_Screen(data);
     }
     return nullptr;
 }
@@ -150,6 +169,8 @@ void Rhythm_Game::check_for_hit(bn::keypad::key_type button)
                 active_notes.erase(active_notes.begin() + i);
                 update_combo();
                 hit = true;
+                display_popup(HIT_TYPE_PERFECT);
+                perfect_notes++;
             }
             else if(distance_from_hit_zone <= hit_great/2)
             {
@@ -158,6 +179,8 @@ void Rhythm_Game::check_for_hit(bn::keypad::key_type button)
                 active_notes.erase(active_notes.begin() + i);
                 update_combo();
                 hit = true;
+                display_popup(HIT_TYPE_GREAT);
+                great_notes++;
             }
             else if(distance_from_hit_zone <= hit_good/2)
             {
@@ -166,15 +189,24 @@ void Rhythm_Game::check_for_hit(bn::keypad::key_type button)
                 active_notes.erase(active_notes.begin() + i);
                 update_combo();
                 hit = true;
+                display_popup(HIT_TYPE_GOOD);
+                good_notes++;
             }
-            else if(distance_from_hit_zone <= hit_sloppy/2)
+            else if(distance_from_hit_zone <= hit_poor/2)
             {
-                BN_LOG("Sloppy!");
+                BN_LOG("Poor!");
                 update_score(25);
                 active_notes.erase(active_notes.begin() + i);
                 update_combo();
                 hit = true;
+                display_popup(HIT_TYPE_POOR);
+                poor_notes++;
             }
+        }
+        if (hit)
+        {
+            notes_hit++;
+            break;
         }
     }
     if(!hit)
@@ -183,17 +215,23 @@ void Rhythm_Game::check_for_hit(bn::keypad::key_type button)
     }
 }
 
-void Rhythm_Game::check_for_missed_notes()
+void Rhythm_Game::update_notes()
 {
     // de-increments (is that a word?) because deletion may change the index of later notes in the loop
     for (int i = active_notes.size() - 1; i >= 0; i--)
     {
         active_notes[i].update();
 
+        if (active_notes[i].missed_this_frame())
+        {
+            end_combo();
+            notes_missed++;
+            display_popup(HIT_TYPE_MISS);
+        }
+
         if (active_notes[i].to_delete()) 
         {
             active_notes.erase(active_notes.begin() + i);
-            end_combo();
         }
     }
 }
@@ -247,4 +285,9 @@ void Rhythm_Game::display_text()
 
     text_generator.generate(-60, 72, score_string, text_sprites);
     text_generator.generate(60, 72, max_combo_string, text_sprites);
+}
+
+void Rhythm_Game::display_popup(hit_type type)
+{
+    hit_popup = Hit_Popup(type);
 }

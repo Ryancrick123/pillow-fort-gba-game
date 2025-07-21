@@ -20,12 +20,30 @@ void Note::update()
 void Note::set_position()
 {
     bn::fixed new_y = current_sprite.position().y() + current_note_data.descent_speed;
+
+    // Make notes rush off screen once missed
+    if (int(current_sprite.position().y()) > 57)
+    {
+        new_y = current_sprite.position().y() + (4 * current_note_data.descent_speed);
+    }
+    
     current_sprite.set_y(new_y);
 }
 
 bool Note::to_delete()
 {
     return marked_for_deletion;
+}
+
+// to be called from rhythm_game to break combos
+bool Note::missed_this_frame()
+{
+    if (!missed && int(current_sprite.position().y()) > 56)
+    {
+        missed = true;
+        return true;
+    }
+    return false;
 }
 
 const bn::fixed_point& Note::get_position() const

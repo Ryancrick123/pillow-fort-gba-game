@@ -5,18 +5,17 @@
 
 #include "hub.h"
 
-Score_Screen::Score_Screen(int score_from_song, int max_combo_from_song) :
+Score_Screen::Score_Screen(score_data data_from_game) :
     text_generator(bn::sprite_font(bn::sprite_items::common_variable_8x16_font)),
-    score(score_from_song),
-    max_combo(max_combo_from_song)
+    data(data_from_game)
 {
     text_generator.set_center_alignment();
     
     // this seems to be the cleanest way to get things into bn::strings
     bn::string<32> score_string = "Score: ";
-    score_string += bn::to_string<10>(score);
+    score_string += bn::to_string<10>(data.score);
     bn::string<32> max_combo_string = "Combo: ";
-    max_combo_string += bn::to_string<10>(max_combo);
+    max_combo_string += bn::to_string<10>(data.max_combo);
 
     text_generator.generate(0, -40, score_string, text_sprites);
     text_generator.generate(0, 40, max_combo_string, text_sprites);

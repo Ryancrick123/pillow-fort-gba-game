@@ -21,6 +21,7 @@ public:
     void update();
     void set_position();
     bool to_delete();
+    bool missed_this_frame();
     const bn::fixed_point& get_position() const;
     note_data current_note_data;
     
@@ -28,6 +29,7 @@ private:
     bn::sprite_ptr select_sprite();
     bool marked_for_deletion = false;
     bn::sprite_ptr current_sprite;
+    bool missed = false;
 };
 
 #endif // NOTE_H

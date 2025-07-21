@@ -4,7 +4,9 @@
         "atomic": "cpp",
         "type_traits": "cpp",
         "xutility": "cpp",
-        "initializer_list": "cpp"
+        "initializer_list": "cpp",
+        "optional": "cpp",
+        "memory": "cpp"
     },
     "C_Cpp.errorSquiggles": "enabledIfIncludesResolve",
     "github.copilot.nextEditSuggestions.enabled": false
