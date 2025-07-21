@@ -12,4 +12,4 @@ namespace npc_dialogue
 
 }
 
-#endif // NPC_DIALOGUE_H
+#endif

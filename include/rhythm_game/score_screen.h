@@ -34,4 +34,4 @@ class Score_Screen : public State
         bool go_to_hub = false;
 };
 
-#endif // SCORE_SCREEN_H
+#endif

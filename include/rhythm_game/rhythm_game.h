@@ -57,4 +57,4 @@ private:
     void display_popup(hit_type type);
 };
 
-#endif // RHYTHM_GAME_H
+#endif

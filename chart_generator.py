@@ -12,16 +12,18 @@ class ChartGenerator:
     def parse_xm(self):
         self.output = ""
         self.cpp_header()
-        songlist = []
+        self.songlist = []
         for filename in os.listdir(self.directory):
             self.filename = os.path.join(self.directory, filename)
             if filename.endswith('.xm'):
                 with open(self.filename, "rb") as file:
                     self.file = file
                     self.parse_song_name()
+                    self.songlist.append('&' + self.name_underscore)
                     self.read_header()
                     self.read_patterns()
                     self.song_details()
+        self.song_array()
         self.cpp_footer()
         self.write_to_file()
 
@@ -191,6 +193,17 @@ class ChartGenerator:
         output += "    };\n"
         output += "    #endif\n\n"
         self.output += output
+
+    def song_array(self):
+        output = f"    constexpr bn::array<const song*, {len(self.songlist)}> all_songs = {{{{\n"
+        for i, song in enumerate(self.songlist):
+            output += f"        {song}"
+            if i < len(self.songlist) - 1:
+                output += ","
+            output += "\n"
+        output += "    }};\n"
+        self.output += output
+
 
     def cpp_header(self):
         # this is a bit gross to look at bc of the indenting, but was the easiest way to do this in one string

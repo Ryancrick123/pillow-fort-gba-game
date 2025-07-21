@@ -32,4 +32,4 @@ private:
     bool missed = false;
 };
 
-#endif // NOTE_H
+#endif

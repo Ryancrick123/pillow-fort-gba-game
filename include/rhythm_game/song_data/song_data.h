@@ -357,5 +357,9 @@ namespace songs
     };
     #endif
 
+    constexpr bn::array<const song*, 2> all_songs = {{
+        &joan,
+        &joan_2_electric_boogaloo
+    }};
 }
-#endif // SONG_DATA_H
+#endif
