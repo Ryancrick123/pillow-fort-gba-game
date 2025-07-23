@@ -6,7 +6,9 @@
         "xutility": "cpp",
         "initializer_list": "cpp",
         "optional": "cpp",
-        "memory": "cpp"
+        "memory": "cpp",
+        "algorithm": "cpp",
+        "utility": "cpp"
     },
     "C_Cpp.errorSquiggles": "enabledIfIncludesResolve",
     "github.copilot.nextEditSuggestions.enabled": false

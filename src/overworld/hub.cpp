@@ -3,15 +3,14 @@
 //#include "bn_sprite_ptr.h"
 
 #include "bn_keypad.h"
-#include "rhythm_game.h"
+#include "song_menu.h"
 
 #include "bn_sprite_items_temp_ry.h"
 #include "bn_regular_bg_items_test_map_collision.h"
 #include "bn_regular_bg_items_test_map_floor.h"
 #include "bn_regular_bg_items_test_map_world.h"
 
-#include "chart_override.h"
-#include "song_data.h"
+
 
 Hub::Hub() :
     collision_bg_item(bn::regular_bg_items::test_map_collision),
@@ -27,15 +26,15 @@ void Hub::update()
     player.update();
     if(bn::keypad::b_pressed())
     {
-        go_to_rhythm_game = true;
+        go_to_song_menu = true;
     }
 }
 
 State *Hub::next_state()
 {
-    if(go_to_rhythm_game)
+    if(go_to_song_menu)
     {
-        return new Rhythm_Game(songs::joan);
+        return new Song_Menu();
     }
     return nullptr;
 }

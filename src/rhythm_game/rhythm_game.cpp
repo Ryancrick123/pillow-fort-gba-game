@@ -38,6 +38,7 @@ void Rhythm_Game::update()
     
     // use frame count instead of ticks - frames seem more consistent on the old hardware than ticks
     // both worked perfectly on emulator - maybe need more trial and error on real hardware
+    // could maybe check which .xm pattern we're up to in the music if we know how long they are and correct the drift each time it changes?
     int elapsed_ticks = frame_count * bn::timers::ticks_per_frame();
     int elapsed_beats = (elapsed_ticks + note_offset) / ticks_per_beat;
     if (elapsed_beats >= song.notes[current_note_index].timestamp && 
@@ -56,6 +57,8 @@ void Rhythm_Game::update()
         BN_LOG("Score: ", score); // TODO: add score, combo etc
 
         BN_LOG("Max combo: ", max_combo);
+
+        bn::music::stop();
         // TODO - throw this into a function and do some score stuff, combos etc
         go_to_hub = true;
     }

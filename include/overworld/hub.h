@@ -19,7 +19,7 @@ private:
     bn::regular_bg_ptr world_bg;
     CollisionHandler collision_handler;
     Player player;
-    bool go_to_rhythm_game = false;
+    bool go_to_song_menu = false;
 };
 
 #endif
