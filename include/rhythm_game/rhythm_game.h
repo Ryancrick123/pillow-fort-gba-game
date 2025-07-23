@@ -21,6 +21,7 @@ private:
     bn::regular_bg_ptr ry_bg;
     bn::regular_bg_ptr fretboard_bg;
     bn::timer song_timer;
+    int frame_count = 0;
     int current_note_index = 0;
     bn::vector<Note, 100> active_notes;
     const songs::song& song;

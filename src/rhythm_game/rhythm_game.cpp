@@ -4,6 +4,7 @@
 #include "bn_blending.h"
 #include "bn_blending_actions.h"
 #include "bn_music_items.h"
+#include "bn_music.h"
 #include "bn_log.h"
 #include "bn_string.h"
 #include "score_screen.h"
@@ -32,17 +33,20 @@ Rhythm_Game::Rhythm_Game(const songs::song& song_selection) :
 void Rhythm_Game::update()
 {
     song_setup();
+
+    frame_count++;
     
-    int elapsed_beats = (song_timer.elapsed_ticks() + note_offset) / ticks_per_beat;
-    
-    // creating new notes
+    // use frame count instead of ticks - frames seem more consistent on the old hardware than ticks
+    // both worked perfectly on emulator - maybe need more trial and error on real hardware
+    int elapsed_ticks = frame_count * bn::timers::ticks_per_frame();
+    int elapsed_beats = (elapsed_ticks + note_offset) / ticks_per_beat;
     if (elapsed_beats >= song.notes[current_note_index].timestamp && 
         current_note_index < song.size) 
     {
         active_notes.emplace_back(song.notes[current_note_index]);
         current_note_index++;
     }
-
+    
     update_notes();
     check_inputs();
 

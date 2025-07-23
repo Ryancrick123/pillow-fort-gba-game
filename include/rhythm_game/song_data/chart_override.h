@@ -7,7 +7,7 @@
 
 namespace songs
 {
-    
+    /*
     #define JOAN_OVERRIDE
     constexpr bn::array<note_data, 4> joan_data = {{
         {bn::keypad::key_type::A, 32, 1},
@@ -25,7 +25,7 @@ namespace songs
         0,
         bn::music_items::a_joan
     };
-    
+    */
 }
 
 #endif

@@ -220,7 +220,7 @@ namespace songs
 
     def cpp_footer(self):
         footer = """}
-#endif // SONG_DATA_H"""
+#endif"""
         self.output += footer
 
     def write_to_file(self):
