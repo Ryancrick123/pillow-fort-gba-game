@@ -6,9 +6,19 @@
 #include "song_data.h"
 
 #include "bn_sprite_items_common_variable_8x16_font.h"
+#include "bn_regular_bg_items_song_selection_menu.h"
+#include "bn_sprite_items_select_right.h"
+#include "bn_sprite_items_select_left.h"
 
 Song_Menu::Song_Menu() :
-    text_generator(bn::sprite_font(bn::sprite_items::common_variable_8x16_font))
+    text_generator(bn::sprite_font(bn::sprite_items::common_variable_8x16_font)),
+    background_item(bn::regular_bg_items::song_selection_menu),
+    background(background_item.create_bg(0, 0)),
+    background_animation(bn::create_regular_bg_cached_animate_action_forever(background, 15, background_item.map_item(), 0, 1, 2, 3)),
+    left(bn::sprite_items::select_left.create_sprite(-100, 1)),
+    right(bn::sprite_items::select_right.create_sprite(100, -1)),
+    left_action(left, 30, bn::fixed_point(-110, -1)),
+    right_action(right, 30, bn::fixed_point(110, 1))
 {
     text_generator.set_center_alignment();
     write_song_name();
@@ -16,6 +26,10 @@ Song_Menu::Song_Menu() :
 
 void Song_Menu::update()
 {
+    background_animation.update();
+    left_action.update();
+    right_action.update();
+
     if (bn::keypad::right_pressed())
     {
         current_index++;

@@ -2,12 +2,17 @@
 #include "bn_string.h"
 #include "bn_keypad.h"
 #include "bn_sprite_items_common_variable_8x16_font.h"
+#include "bn_regular_bg_items_song_selection_menu.h"
 
 #include "hub.h"
+#include "song_menu.h"
 
 Score_Screen::Score_Screen(score_data data_from_game) :
     text_generator(bn::sprite_font(bn::sprite_items::common_variable_8x16_font)),
-    data(data_from_game)
+    data(data_from_game),
+    background_item(bn::regular_bg_items::song_selection_menu),
+    background(background_item.create_bg(0, 0)),
+    background_animation(bn::create_regular_bg_cached_animate_action_forever(background, 15, background_item.map_item(), 0, 1, 2, 3))
 {
     text_generator.set_center_alignment();
     
@@ -23,6 +28,7 @@ Score_Screen::Score_Screen(score_data data_from_game) :
 
 void Score_Screen::update()
 {
+    background_animation.update();
     if (freeze_timer.elapsed_ticks() < 3 * bn::timers::ticks_per_second())
     {
         return;
@@ -38,7 +44,7 @@ State *Score_Screen::next_state()
 {
     if (go_to_hub)
     {
-        return new Hub();
+        return new Song_Menu();
     }
     
     return nullptr;

@@ -133,7 +133,7 @@ class ChartGenerator:
                         case 0: # B
                             button = "bn::keypad::key_type::UP"
                         case 1: # C
-                            button = "bn::keypad::key_type::R"
+                            button = "bn::keypad::key_type::RIGHT"
                         case 2: # C#
                             button = "bn::keypad::key_type::A"
                         case 3: # D
