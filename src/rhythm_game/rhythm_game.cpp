@@ -8,6 +8,7 @@
 #include "bn_log.h"
 #include "bn_string.h"
 #include "score_screen.h"
+#include "maxmod.h"
 
 #include "bn_regular_bg_items_fretboard.h"
 #include "bn_regular_bg_items_ry_guitar.h"
@@ -25,9 +26,13 @@ Rhythm_Game::Rhythm_Game(const songs::song& song_selection) :
     text_generator.set_center_alignment();
     display_text();
 
-    // BPM we're setting is to be multiplied by 4 for this calculation
-    int beats_per_second = song.tempo * 4 / 60;
-    ticks_per_beat = bn::timers::ticks_per_second() / beats_per_second;
+    // Calculate note offset based on note travel time, song tempo and note speed
+    bn::fixed travel_time_frames = bn::fixed(148) / config::note_speed; // 148 is distance from note spawn position to centre of fretboard
+    int travel_time_ticks = int(travel_time_frames * bn::timers::ticks_per_frame());
+    int rows_per_second = song.tempo * 4 / 60; // 4 rows per beat
+    int ticks_per_row = bn::timers::ticks_per_second() / rows_per_second;
+    note_offset = (travel_time_ticks + ticks_per_row / 2) / ticks_per_row; // +0.5 to round to nearest int
+    BN_LOG("Note offset (rows): ", note_offset);
 }
 
 void Rhythm_Game::update()
@@ -35,19 +40,30 @@ void Rhythm_Game::update()
     song_setup();
 
     frame_count++;
-    
-    // use frame count instead of ticks - frames seem more consistent on the old hardware than ticks
-    // both worked perfectly on emulator - maybe need more trial and error on real hardware
-    // could maybe check which .xm pattern we're up to in the music if we know how long they are and correct the drift each time it changes?
-    int elapsed_ticks = frame_count * bn::timers::ticks_per_frame();
-    int elapsed_beats = (elapsed_ticks + note_offset) / ticks_per_beat;
-    if (elapsed_beats >= song.notes[current_note_index].timestamp && 
+
+    int current_pattern = mmGetPosition();
+    int current_row = mmGetPositionRow();
+    int absolute_row = 0;
+
+    // First pattern has 32 rows, subsequent patterns have 64 rows
+    if (current_pattern == 0) 
+    {
+        absolute_row = current_row;
+    } 
+    else
+    {
+        absolute_row = 32 + (current_pattern - 1) * 64 + current_row;
+    }
+
+    BN_LOG("Pattern: ", current_pattern, " Row: ", current_row, " tick: ", mmGetPositionTick(), " Abs Row: ", absolute_row);
+    BN_LOG("offset row: ", absolute_row + note_offset);
+    if (absolute_row + note_offset >= song.notes[current_note_index].timestamp && 
         current_note_index < song.size) 
     {
         active_notes.emplace_back(song.notes[current_note_index]);
         current_note_index++;
     }
-    
+
     update_notes();
     check_inputs();
 
@@ -113,6 +129,10 @@ void Rhythm_Game::song_setup()
         setup_fretboard();
         song_timer.restart();
         song.audio.play(1.0, false); // TODO - select song from menu
+        // Allow a few frames for maxmod to update positions
+        for (int i = 0; i < 3; i++) {
+            bn::core::update();
+        }
         setup_done = true;
         return;
     }

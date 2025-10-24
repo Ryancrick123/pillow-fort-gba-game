@@ -10,7 +10,7 @@
 struct note_data {
         bn::keypad::key_type button;
         int timestamp;
-        int descent_speed;
+        int descent_speed; // currently unused
     };
 
 // Base class for all actors to inherit

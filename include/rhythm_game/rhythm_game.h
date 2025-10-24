@@ -9,6 +9,7 @@
 #include "bn_timers.h"
 #include "bn_sprite_text_generator.h"
 #include "hit_popup.h"
+#include "config.h"
 
 class Rhythm_Game : public State
 {
@@ -42,7 +43,7 @@ private:
     int good_notes = 0;
     int poor_notes = 0;
     int ticks_per_beat = 0;
-    int note_offset = 148 * bn::timers::ticks_per_frame(); // offset to account for note travel time
+    int note_offset;
     bn::sprite_text_generator text_generator;
     bn::vector<bn::sprite_ptr, 32> text_sprites;
     bn::optional<Hit_Popup> hit_popup;

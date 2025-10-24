@@ -1,5 +1,6 @@
 #include "note.h"
 #include "bn_sprite_items_buttons.h"
+#include "config.h"
 
 Note::Note(note_data note_data) :
     current_note_data(note_data),
@@ -19,12 +20,12 @@ void Note::update()
 
 void Note::set_position()
 {
-    bn::fixed new_y = current_sprite.position().y() + current_note_data.descent_speed;
+    bn::fixed new_y = current_sprite.position().y() + config::note_speed;
 
     // Make notes rush off screen once missed
     if (int(current_sprite.position().y()) > 57)
     {
-        new_y = current_sprite.position().y() + (4 * current_note_data.descent_speed);
+        new_y = current_sprite.position().y() + (4 * config::note_speed);
     }
     
     current_sprite.set_y(new_y);
