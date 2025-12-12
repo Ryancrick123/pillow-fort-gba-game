@@ -57,6 +57,7 @@ private:
     void end_combo();
     void display_text();
     void display_popup(hit_type type);
+    void calculate_note_offset();
 };
 
 #endif

@@ -5,7 +5,7 @@
 
 namespace config
 {
-    constexpr bn::fixed note_speed = 1.5;
+    constexpr bn::fixed note_speed = 2.0;
 }
 
 #endif

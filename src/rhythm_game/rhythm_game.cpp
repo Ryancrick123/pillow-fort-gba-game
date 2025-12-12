@@ -26,13 +26,7 @@ Rhythm_Game::Rhythm_Game(const songs::song& song_selection) :
     text_generator.set_center_alignment();
     display_text();
 
-    // Calculate note offset based on note travel time, song tempo and note speed
-    bn::fixed travel_time_frames = bn::fixed(148) / config::note_speed; // 148 is distance from note spawn position to centre of fretboard
-    int travel_time_ticks = int(travel_time_frames * bn::timers::ticks_per_frame());
-    int rows_per_second = song.tempo * 4 / 60; // 4 rows per beat
-    int ticks_per_row = bn::timers::ticks_per_second() / rows_per_second;
-    note_offset = (travel_time_ticks + ticks_per_row / 2) / ticks_per_row; // +0.5 to round to nearest int
-    BN_LOG("Note offset (rows): ", note_offset);
+    calculate_note_offset();
 }
 
 void Rhythm_Game::update()
@@ -46,13 +40,14 @@ void Rhythm_Game::update()
     int absolute_row = 0;
 
     // First pattern has 32 rows, subsequent patterns have 64 rows
+    // If I wanted to adapt to use patterns of different sizes, I'd need to track that in the python chart generator or maintain an absolute row and the lengths of the patterns when they change
     if (current_pattern == 0) 
     {
         absolute_row = current_row;
     } 
     else
     {
-        absolute_row = 32 + (current_pattern - 1) * 64 + current_row;
+        absolute_row = 32 + (current_pattern - 1) * 64 + current_row; 
     }
 
     BN_LOG("Pattern: ", current_pattern, " Row: ", current_row, " tick: ", mmGetPositionTick(), " Abs Row: ", absolute_row);
@@ -128,7 +123,7 @@ void Rhythm_Game::song_setup()
     {
         setup_fretboard();
         song_timer.restart();
-        song.audio.play(1.0, false); // TODO - select song from menu
+        song.audio.play(1.0, false);
         // Allow a few frames for maxmod to update positions
         for (int i = 0; i < 3; i++) {
             bn::core::update();
@@ -317,4 +312,14 @@ void Rhythm_Game::display_text()
 void Rhythm_Game::display_popup(hit_type type)
 {
     hit_popup = Hit_Popup(type);
+}
+
+void Rhythm_Game::calculate_note_offset()
+{
+    bn::fixed travel_time_frames = bn::fixed(148) / config::note_speed; // 148 is distance from note spawn position to centre of fretboard
+    int travel_time_ticks = int(travel_time_frames * bn::timers::ticks_per_frame());
+    int rows_per_second = song.tempo * 4 / 60; // 4 rows per beat
+    int ticks_per_row = bn::timers::ticks_per_second() / rows_per_second;
+    note_offset = (travel_time_ticks + ticks_per_row / 2) / ticks_per_row; // +0.5 to round to nearest int
+    BN_LOG("Note offset (rows): ", note_offset);
 }
