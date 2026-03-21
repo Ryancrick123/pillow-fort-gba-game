@@ -35,6 +35,10 @@ class ChartGenerator:
         self.name_underscore = name_without_unlock.split('.')[0]
         name_spaces = self.name_underscore.replace('_', ' ')
         self.song_name = string.capwords(name_spaces)
+        # if first digit is a number, add an underscore to the start to avoid invalid identifiers
+        if self.name_underscore[0].isdigit():
+            self.name_underscore = '_' + self.name_underscore
+        
         print(f"Song Name: {self.song_name}")
 
     def read_header(self):
