@@ -58,7 +58,7 @@ void Rhythm_Game::update()
     check_inputs();
 
     // Check for end of song
-    if (current_note_index >= song.size && active_notes.empty()) 
+    if (current_note_index >= song.size && active_notes.empty() && !bn::music::playing()) 
     {
         BN_LOG("Score: ", score); // TODO: add score, combo etc
 
