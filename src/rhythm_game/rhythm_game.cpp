@@ -38,18 +38,6 @@ void Rhythm_Game::update()
     int current_pattern = mmGetPosition();
     int current_row = mmGetPositionRow();
 
-    
-    /*
-    // legacy code for calculating absolute row - used when all patterns were the same length
-    if (current_pattern == 0) 
-    {
-        absolute_row = current_row;
-    } 
-    else
-    {
-        absolute_row = 32 + (current_pattern - 1) * 64 + current_row; 
-    }*/
-
     int absolute_row = current_row;
 
     for (int i = 0; i < current_pattern; i++)
