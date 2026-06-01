@@ -37,10 +37,10 @@ void Rhythm_Game::update()
 
     int current_pattern = mmGetPosition();
     int current_row = mmGetPositionRow();
-    int absolute_row = 0;
 
-    // First pattern has 32 rows, subsequent patterns have 64 rows
-    // If I wanted to adapt to use patterns of different sizes, I'd need to track that in the python chart generator or maintain an absolute row and the lengths of the patterns when they change
+    
+    /*
+    // legacy code for calculating absolute row - used when all patterns were the same length
     if (current_pattern == 0) 
     {
         absolute_row = current_row;
@@ -48,6 +48,13 @@ void Rhythm_Game::update()
     else
     {
         absolute_row = 32 + (current_pattern - 1) * 64 + current_row; 
+    }*/
+
+    int absolute_row = current_row;
+
+    for (int i = 0; i < current_pattern; i++)
+    {
+        absolute_row += song.pattern_lengths[i];
     }
 
     BN_LOG("Pattern: ", current_pattern, " Row: ", current_row, " tick: ", mmGetPositionTick(), " Abs Row: ", absolute_row);

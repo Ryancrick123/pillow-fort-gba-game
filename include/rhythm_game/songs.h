@@ -18,6 +18,7 @@ namespace songs
     struct song {
         const note_data* notes;
         int size; // Number of notes in the song
+        const int* pattern_lengths;
         int tempo;
         const char* name;
         song_type type;

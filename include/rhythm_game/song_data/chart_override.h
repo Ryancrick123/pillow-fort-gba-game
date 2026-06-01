@@ -172,9 +172,24 @@ namespace songs
         {bn::keypad::key_type::L, 668, 1}
     }};
 
+    constexpr bn::array<int, 11> joan_pattern_lengths = {{
+        32,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+    }};
+
     constexpr song joan = {
         joan_data.data(),
         joan_data.size(),
+        joan_pattern_lengths.data(),
         120,
         "Joan",
         normal,

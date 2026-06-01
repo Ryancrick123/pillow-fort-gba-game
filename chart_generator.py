@@ -22,6 +22,7 @@ class ChartGenerator:
                     self.songlist.append('&' + self.name_underscore)
                     self.read_header()
                     self.read_patterns()
+                    self.list_pattern_lengths()
                     self.song_details()
         self.song_array()
         self.cpp_footer()
@@ -69,6 +70,7 @@ class ChartGenerator:
         start_of_patterns = self.header_size + 60
         notes = []
         row_offset = 0 # this isn't a memory location, just a number to see what we should add to the row number. Should probs change name when I get a chance
+        self.pattern_lengths = []
         for pattern_num in self.pattern_order:
             # Skip to the correct pattern
             file.seek(start_of_patterns)
@@ -84,6 +86,7 @@ class ChartGenerator:
             pattern_header_size = pattern_header_size = int.from_bytes(file.read(4), byteorder='little')
             file.seek(file.tell() + 1) # ignore packing type byte - apparently meaningless
             num_rows = int.from_bytes(file.read(2), byteorder='little')
+            self.pattern_lengths.append(num_rows) # this tracks pattern lengths so we can do things that aren't 4/4
             pattern_size = int.from_bytes(file.read(2), byteorder='little')
 
             file.seek(current_offset + pattern_header_size) # jump to pattern data
@@ -164,6 +167,7 @@ class ChartGenerator:
 
         self.note_count = len(notes)
         print(f"Total Notes: {self.note_count}")
+        print(f"Pattern Lengths: {self.pattern_lengths}")
 
         # Process notes into C++ config format
         length = len(notes)
@@ -184,11 +188,22 @@ class ChartGenerator:
 
         output += "    }};\n\n"    
         self.output += output
+
+    def list_pattern_lengths(self):
+        output = f"    constexpr bn::array<int, {len(self.pattern_lengths)}> {self.name_underscore}_pattern_lengths = {{{{\n"
+        for i, length in enumerate(self.pattern_lengths):
+            output += f"        {length}"
+            if i < len(self.pattern_lengths) - 1:
+                output += ","
+            output += "\n"
+        output += "    }};\n\n"
+        self.output += output
         
     def song_details(self):
         output = f"    constexpr song {self.name_underscore} = {{\n"
         output += f"        {self.name_underscore}_data.data(),\n"
         output += f"        {self.name_underscore}_data.size(),\n"
+        output += f"        {self.name_underscore}_pattern_lengths.data(),\n"
         output += f"        {self.default_tempo},\n"
         output += f"        \"{self.song_name}\",\n"
         output += f"        normal,\n"
