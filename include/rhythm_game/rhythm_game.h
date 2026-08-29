@@ -49,6 +49,7 @@ private:
     bn::optional<Hit_Popup> hit_popup;
     void setup_fretboard();
     void song_setup();
+    void create_notes();
     void check_for_hit(bn::keypad::key_type button);
     void check_inputs();
     void update_notes();

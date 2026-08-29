@@ -10,6 +10,8 @@
 #include "bn_sprite_items_select_right.h"
 #include "bn_sprite_items_select_left.h"
 
+int unlocked_songs = 5; // TODO: remove this placeholder and use it from save data
+
 Song_Menu::Song_Menu() :
     text_generator(bn::sprite_font(bn::sprite_items::common_variable_8x16_font)),
     background_item(bn::regular_bg_items::song_selection_menu),
@@ -35,7 +37,7 @@ void Song_Menu::update()
         current_index++;
         int prev_index = bn::max(current_index - 1, 0);
         // Loop song selection and only show one locked song at any given time
-        if(current_index >= songs::all_songs.size() || !songs::all_songs[prev_index]->is_unlocked(0))
+        if(current_index >= songs::all_songs.size() || !songs::all_songs[prev_index]->is_unlocked(unlocked_songs))
         {
             current_index = 0;
         }
@@ -50,7 +52,7 @@ void Song_Menu::update()
             // this assumes there will always be one song unlocked from the start (should be the case unless modded)
             for(int i = songs::all_songs.size() - 1; i >= 0; --i)
             {
-                if(songs::all_songs[i - 1]->is_unlocked(0))
+                if(songs::all_songs[i - 1]->is_unlocked(unlocked_songs))
                 {
                     last_showable_song_index = i;
                     break;
@@ -64,7 +66,13 @@ void Song_Menu::update()
 
     if(bn::keypad::a_pressed())
     {
-        go_to_rhythm_game = true;
+        if (songs::all_songs[current_index]->is_unlocked(unlocked_songs))
+        {
+            go_to_rhythm_game = true;
+        }
+
+        // TODO: Add feedback for locked songs - sound effect/text?
+        
     }
 }
 
@@ -81,7 +89,7 @@ void Song_Menu::write_song_name()
 {
     text_sprites.clear();
     text_generator.generate(0, 0, songs::all_songs[current_index]->name, text_sprites);
-    if (!songs::all_songs[current_index]->is_unlocked(0))
+    if (!songs::all_songs[current_index]->is_unlocked(unlocked_songs))
     {
         text_generator.generate(0, 40, "LOCKED", text_sprites);
     }

@@ -13,7 +13,7 @@ class ChartGenerator:
         self.output = ""
         self.cpp_header()
         self.songlist = []
-        for filename in os.listdir(self.directory):
+        for filename in sorted(os.listdir(self.directory)):
             self.filename = os.path.join(self.directory, filename)
             if filename.endswith('.xm'):
                 with open(self.filename, "rb") as file:

@@ -32,35 +32,14 @@ Rhythm_Game::Rhythm_Game(const songs::song& song_selection) :
 void Rhythm_Game::update()
 {
     song_setup();
-
-    frame_count++;
-
-    int current_pattern = mmGetPosition();
-    int current_row = mmGetPositionRow();
-
-    int absolute_row = current_row;
-
-    for (int i = 0; i < current_pattern; i++)
-    {
-        absolute_row += song.pattern_lengths[i];
-    }
-
-    BN_LOG("Pattern: ", current_pattern, " Row: ", current_row, " tick: ", mmGetPositionTick(), " Abs Row: ", absolute_row);
-    BN_LOG("offset row: ", absolute_row + note_offset);
-    if (absolute_row + note_offset >= song.notes[current_note_index].timestamp && 
-        current_note_index < song.size) 
-    {
-        active_notes.emplace_back(song.notes[current_note_index]);
-        current_note_index++;
-    }
-
+    create_notes();
     update_notes();
     check_inputs();
 
     // Check for end of song
     if (current_note_index >= song.size && active_notes.empty() && !bn::music::playing()) 
     {
-        BN_LOG("Score: ", score); // TODO: add score, combo etc
+        BN_LOG("Score: ", score);
 
         BN_LOG("Max combo: ", max_combo);
 
@@ -125,6 +104,30 @@ void Rhythm_Game::song_setup()
         }
         setup_done = true;
         return;
+    }
+}
+
+void Rhythm_Game::create_notes()
+{
+    frame_count++;
+
+    int current_pattern = mmGetPosition();
+    int current_row = mmGetPositionRow();
+
+    int absolute_row = current_row;
+
+    for (int i = 0; i < current_pattern; i++)
+    {
+        absolute_row += song.pattern_lengths[i];
+    }
+
+    BN_LOG("Pattern: ", current_pattern, " Row: ", current_row, " tick: ", mmGetPositionTick(), " Abs Row: ", absolute_row);
+    BN_LOG("offset row: ", absolute_row + note_offset);
+    if (absolute_row + note_offset >= song.notes[current_note_index].timestamp && 
+        current_note_index < song.size) 
+    {
+        active_notes.emplace_back(song.notes[current_note_index]);
+        current_note_index++;
     }
 }
 
