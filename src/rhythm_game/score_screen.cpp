@@ -7,7 +7,7 @@
 #include "hub.h"
 #include "song_menu.h"
 
-Score_Screen::Score_Screen(score_data data_from_game) :
+Score_Screen::Score_Screen(score_data::score_data data_from_game) :
     text_generator(bn::sprite_font(bn::sprite_items::common_variable_8x16_font)),
     data(data_from_game),
     background_item(bn::regular_bg_items::song_selection_menu),

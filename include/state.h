@@ -10,6 +10,7 @@ public:
     virtual void update() = 0;
     virtual void pause() {}; // TODO - set up pausing
     virtual State* next_state() = 0; // To return a state, or nullptr if no next state
+    // TODO - Title screen, splash screens, save screen
 };
 
 #endif

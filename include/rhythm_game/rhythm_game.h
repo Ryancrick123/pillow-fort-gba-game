@@ -10,6 +10,7 @@
 #include "bn_sprite_text_generator.h"
 #include "hit_popup.h"
 #include "config.h"
+#include "score_data.h"
 
 class Rhythm_Game : public State
 {

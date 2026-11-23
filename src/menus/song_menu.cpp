@@ -10,7 +10,7 @@
 #include "bn_sprite_items_select_right.h"
 #include "bn_sprite_items_select_left.h"
 
-int unlocked_songs = 5; // TODO: remove this placeholder and use it from save data
+int unlocked_songs = 10; // TODO: remove this placeholder and use it from save data
 
 Song_Menu::Song_Menu() :
     text_generator(bn::sprite_font(bn::sprite_items::common_variable_8x16_font)),

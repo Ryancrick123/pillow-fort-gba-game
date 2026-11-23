@@ -64,7 +64,8 @@ State *Rhythm_Game::next_state()
 {
     if(go_to_hub)
     {
-        score_data data = {
+        score_data::score_data data = {
+            song.unlock_requirement,
             score,
             max_combo,
             notes_hit,
