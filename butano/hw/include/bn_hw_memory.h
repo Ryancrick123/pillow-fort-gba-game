@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -23,8 +23,6 @@ namespace bn::hw::memory
 {
     constexpr unsigned memctrl_address = 0x4000800;
     constexpr unsigned fast_ewram_memctrl_value = 0x0E000020;
-
-    void init();
 
     [[nodiscard]] inline int stack_address()
     {
@@ -85,6 +83,11 @@ namespace bn::hw::memory
     inline void copy_bytes(const void* source, int bytes, void* destination)
     {
         __aeabi_memcpy(destination, source, size_t(bytes));
+    }
+
+    inline void copy_bytes_vram(const void* source, int bytes, void* destination)
+    {
+        tonccpy(destination, source, unsigned(bytes));
     }
 
     inline void copy_half_words(const void* source, int half_words, void* destination)

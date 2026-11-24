@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -9,7 +9,6 @@
 #include "bn_mosaic_attributes.h"
 #include "bn_bgs_manager.h"
 #include "bn_sprites_manager.h"
-#include "../hw/include/bn_hw_bgs.h"
 #include "../hw/include/bn_hw_display.h"
 
 #include "bn_window.cpp.h"
@@ -29,6 +28,7 @@ namespace
     {
 
     public:
+        void** bitmap_painter_page_ptr = nullptr;
         bool enabled_bgs[hw::bgs::count()] = {};
         fixed sprites_mosaic_horizontal_stretch;
         fixed sprites_mosaic_vertical_stretch;
@@ -51,6 +51,7 @@ namespace
         uint8_t mode = 0;
         bool commit = true;
         bool commit_display = true;
+        bool bitmap_page_flipped = false;
         bool sprites_visible = true;
         bool green_swap_enabled = false;
         bool update_mosaic = true;
@@ -72,7 +73,12 @@ namespace
         bool commit_green_swap = false;
     };
 
-    BN_DATA_EWRAM_BSS static_data data;
+    alignas(static_data) BN_DATA_EWRAM_BSS char data_buffer[sizeof(static_data)];
+
+    [[nodiscard]] static_data& data_ref()
+    {
+        return *reinterpret_cast<static_data*>(data_buffer);
+    }
 
     [[nodiscard]] pair<int, int> _blending_hw_weights(fixed top_weight, fixed bottom_weight)
     {
@@ -83,17 +89,18 @@ namespace
 
     void _update_rect_windows_hw_boundaries(int boundaries_index)
     {
+        static_data& data = data_ref();
         fixed_point window_boundaries = data.rect_windows_boundaries[boundaries_index];
-        int window_x = window_boundaries.x().right_shift_integer();
-        int window_y = window_boundaries.y().right_shift_integer();
+        int window_x = window_boundaries.x().shift_integer();
+        int window_y = window_boundaries.y().shift_integer();
 
         const optional<camera_ptr>& camera = data.rect_windows_camera[boundaries_index / 2];
 
         if(const camera_ptr* camera_ptr = camera.get())
         {
             const fixed_point& camera_position = camera_ptr->position();
-            window_x -= camera_position.x().right_shift_integer();
-            window_y -= camera_position.y().right_shift_integer();
+            window_x -= camera_position.x().shift_integer();
+            window_y -= camera_position.y().shift_integer();
         }
 
         point& hw_window_boundaries = data.rect_windows_hw_boundaries[boundaries_index];
@@ -106,8 +113,9 @@ namespace
 
 void init()
 {
-    ::new(static_cast<void*>(&data)) static_data();
+    ::new(static_cast<void*>(data_buffer)) static_data();
 
+    static_data& data = data_ref();
     unsigned initial_window_flags =
             unsigned(hw::display::window_flag::SPRITES) |
             unsigned(hw::display::window_flag::BLENDING);
@@ -130,6 +138,8 @@ void init()
 
 void set_mode(int mode)
 {
+    static_data& data = data_ref();
+
     if(data.mode != mode)
     {
         data.mode = uint8_t(mode);
@@ -138,13 +148,52 @@ void set_mode(int mode)
     }
 }
 
+uint16_t* bitmap_page()
+{
+    return hw::display::hidden_bitmap_page();
+}
+
+void flip_bitmap_page_later()
+{
+    static_data& data = data_ref();
+    data.bitmap_page_flipped = ! data.bitmap_page_flipped;
+    data.commit_display = true;
+    data.commit = true;
+}
+
+void flip_bitmap_page_now()
+{
+    flip_bitmap_page_later();
+    hw::display::flip_bitmap_page();
+
+    if(void** bitmap_painter_page_ptr = data_ref().bitmap_painter_page_ptr)
+    {
+        *bitmap_painter_page_ptr = hw::display::hidden_bitmap_page();
+    }
+}
+
+void on_bitmap_painter_created(void** painter_page_ptr)
+{
+    static_data& data = data_ref();
+    BN_BASIC_ASSERT(! data.bitmap_painter_page_ptr, "There's an active bitmap painter.");
+
+    data.bitmap_painter_page_ptr = painter_page_ptr;
+}
+
+void on_bitmap_painter_destroyed()
+{
+    data_ref().bitmap_painter_page_ptr = nullptr;
+}
+
 bool sprites_visible()
 {
-    return data.sprites_visible;
+    return data_ref().sprites_visible;
 }
 
 void set_sprites_visible(bool visible)
 {
+    static_data& data = data_ref();
+
     if(data.sprites_visible != visible)
     {
         data.sprites_visible = visible;
@@ -155,11 +204,13 @@ void set_sprites_visible(bool visible)
 
 bool bg_enabled(int bg)
 {
-    return data.enabled_bgs[bg];
+    return data_ref().enabled_bgs[bg];
 }
 
 void set_bg_enabled(int bg, bool enabled)
 {
+    static_data& data = data_ref();
+
     if(data.enabled_bgs[bg] != enabled)
     {
         data.enabled_bgs[bg] = enabled;
@@ -170,6 +221,8 @@ void set_bg_enabled(int bg, bool enabled)
 
 void disable_all_bgs()
 {
+    static_data& data = data_ref();
+
     for(bool& enabled_bg : data.enabled_bgs)
     {
         enabled_bg = false;
@@ -181,11 +234,12 @@ void disable_all_bgs()
 
 fixed sprites_mosaic_horizontal_stretch()
 {
-    return data.sprites_mosaic_horizontal_stretch;
+    return data_ref().sprites_mosaic_horizontal_stretch;
 }
 
 void set_sprites_mosaic_horizontal_stretch(fixed stretch)
 {
+    static_data& data = data_ref();
     fixed old_stretch = data.sprites_mosaic_horizontal_stretch;
     data.sprites_mosaic_horizontal_stretch = stretch;
 
@@ -198,11 +252,12 @@ void set_sprites_mosaic_horizontal_stretch(fixed stretch)
 
 fixed sprites_mosaic_vertical_stretch()
 {
-    return data.sprites_mosaic_vertical_stretch;
+    return data_ref().sprites_mosaic_vertical_stretch;
 }
 
 void set_sprites_mosaic_vertical_stretch(fixed stretch)
 {
+    static_data& data = data_ref();
     fixed old_stretch = data.sprites_mosaic_vertical_stretch;
     data.sprites_mosaic_vertical_stretch = stretch;
 
@@ -215,6 +270,7 @@ void set_sprites_mosaic_vertical_stretch(fixed stretch)
 
 void set_sprites_mosaic_stretch(fixed stretch)
 {
+    static_data& data = data_ref();
     fixed old_horizontal_stretch = data.sprites_mosaic_horizontal_stretch;
     fixed old_vertical_stretch = data.sprites_mosaic_vertical_stretch;
     data.sprites_mosaic_horizontal_stretch = stretch;
@@ -230,6 +286,7 @@ void set_sprites_mosaic_stretch(fixed stretch)
 
 void set_sprites_mosaic_stretch(fixed horizontal_stretch, fixed vertical_stretch)
 {
+    static_data& data = data_ref();
     fixed old_horizontal_stretch = data.sprites_mosaic_horizontal_stretch;
     fixed old_vertical_stretch = data.sprites_mosaic_vertical_stretch;
     data.sprites_mosaic_horizontal_stretch = horizontal_stretch;
@@ -245,11 +302,12 @@ void set_sprites_mosaic_stretch(fixed horizontal_stretch, fixed vertical_stretch
 
 fixed bgs_mosaic_horizontal_stretch()
 {
-    return data.bgs_mosaic_horizontal_stretch;
+    return data_ref().bgs_mosaic_horizontal_stretch;
 }
 
 void set_bgs_mosaic_horizontal_stretch(fixed stretch)
 {
+    static_data& data = data_ref();
     fixed old_stretch = data.bgs_mosaic_horizontal_stretch;
     data.bgs_mosaic_horizontal_stretch = stretch;
 
@@ -262,11 +320,12 @@ void set_bgs_mosaic_horizontal_stretch(fixed stretch)
 
 fixed bgs_mosaic_vertical_stretch()
 {
-    return data.bgs_mosaic_vertical_stretch;
+    return data_ref().bgs_mosaic_vertical_stretch;
 }
 
 void set_bgs_mosaic_vertical_stretch(fixed stretch)
 {
+    static_data& data = data_ref();
     fixed old_stretch = data.bgs_mosaic_vertical_stretch;
     data.bgs_mosaic_vertical_stretch = stretch;
 
@@ -279,6 +338,7 @@ void set_bgs_mosaic_vertical_stretch(fixed stretch)
 
 void set_bgs_mosaic_stretch(fixed stretch)
 {
+    static_data& data = data_ref();
     fixed old_horizontal_stretch = data.bgs_mosaic_horizontal_stretch;
     fixed old_vertical_stretch = data.bgs_mosaic_vertical_stretch;
     data.bgs_mosaic_horizontal_stretch = stretch;
@@ -294,6 +354,7 @@ void set_bgs_mosaic_stretch(fixed stretch)
 
 void set_bgs_mosaic_stretch(fixed horizontal_stretch, fixed vertical_stretch)
 {
+    static_data& data = data_ref();
     fixed old_horizontal_stretch = data.bgs_mosaic_horizontal_stretch;
     fixed old_vertical_stretch = data.bgs_mosaic_vertical_stretch;
     data.bgs_mosaic_horizontal_stretch = horizontal_stretch;
@@ -309,6 +370,7 @@ void set_bgs_mosaic_stretch(fixed horizontal_stretch, fixed vertical_stretch)
 
 void reload_mosaic()
 {
+    static_data& data = data_ref();
     data.update_mosaic = true;
     data.commit = true;
 }
@@ -327,11 +389,13 @@ void fill_mosaic_hblank_effect_attributes(const mosaic_attributes* mosaic_attrib
 
 bool blending_top_bg_enabled(int bg)
 {
-    return data.blending_top_bgs[bg];
+    return data_ref().blending_top_bgs[bg];
 }
 
 void set_blending_top_bg_enabled(int bg, bool enabled)
 {
+    static_data& data = data_ref();
+
     if(data.blending_top_bgs[bg] != enabled)
     {
         data.blending_top_bgs[bg] = enabled;
@@ -342,11 +406,13 @@ void set_blending_top_bg_enabled(int bg, bool enabled)
 
 bool blending_bottom_bg_enabled(int bg)
 {
-    return data.blending_bottom_bgs[bg];
+    return data_ref().blending_bottom_bgs[bg];
 }
 
 void set_blending_bottom_bg_enabled(int bg, bool enabled)
 {
+    static_data& data = data_ref();
+
     if(data.blending_bottom_bgs[bg] != enabled)
     {
         data.blending_bottom_bgs[bg] = enabled;
@@ -357,11 +423,13 @@ void set_blending_bottom_bg_enabled(int bg, bool enabled)
 
 bool blending_bottom_sprites_enabled()
 {
-    return data.blending_bottom_sprites;
+    return data_ref().blending_bottom_sprites;
 }
 
 void set_blending_bottom_sprites_enabled(bool enabled)
 {
+    static_data& data = data_ref();
+
     if(data.blending_bottom_sprites != enabled)
     {
         data.blending_bottom_sprites = enabled;
@@ -372,11 +440,13 @@ void set_blending_bottom_sprites_enabled(bool enabled)
 
 bool blending_bottom_backdrop_enabled()
 {
-    return data.blending_bottom_backdrop;
+    return data_ref().blending_bottom_backdrop;
 }
 
 void set_blending_bottom_backdrop_enabled(bool enabled)
 {
+    static_data& data = data_ref();
+
     if(data.blending_bottom_backdrop != enabled)
     {
         data.blending_bottom_backdrop = enabled;
@@ -387,6 +457,7 @@ void set_blending_bottom_backdrop_enabled(bool enabled)
 
 fixed blending_transparency_alpha()
 {
+    static_data& data = data_ref();
     fixed top_weight = data.blending_transparency_top_weight;
 
     if(top_weight != -1)
@@ -399,6 +470,8 @@ fixed blending_transparency_alpha()
 
 void set_blending_transparency_alpha(fixed transparency_alpha)
 {
+    static_data& data = data_ref();
+
     if(data.blending_transparency_alpha != transparency_alpha ||
             data.blending_transparency_top_weight != -1 ||
             data.blending_transparency_bottom_weight != -1)
@@ -413,6 +486,7 @@ void set_blending_transparency_alpha(fixed transparency_alpha)
 
 fixed blending_intensity_alpha()
 {
+    static_data& data = data_ref();
     fixed bottom_weight = data.blending_transparency_bottom_weight;
 
     if(bottom_weight != -1)
@@ -425,6 +499,8 @@ fixed blending_intensity_alpha()
 
 void set_blending_intensity_alpha(fixed intensity_alpha)
 {
+    static_data& data = data_ref();
+
     if(data.blending_intensity_alpha != intensity_alpha ||
             data.blending_transparency_top_weight != -1 ||
             data.blending_transparency_bottom_weight != -1)
@@ -439,6 +515,8 @@ void set_blending_intensity_alpha(fixed intensity_alpha)
 
 void set_blending_transparency_and_intensity_alpha(fixed transparency_alpha, fixed intensity_alpha)
 {
+    static_data& data = data_ref();
+
     if(data.blending_transparency_alpha != transparency_alpha ||
             data.blending_intensity_alpha != intensity_alpha ||
             data.blending_transparency_top_weight != -1 ||
@@ -455,6 +533,7 @@ void set_blending_transparency_and_intensity_alpha(fixed transparency_alpha, fix
 
 fixed blending_transparency_top_weight()
 {
+    static_data& data = data_ref();
     fixed result = data.blending_transparency_top_weight;
 
     if(result == -1)
@@ -467,6 +546,7 @@ fixed blending_transparency_top_weight()
 
 void set_blending_transparency_top_weight(fixed top_weight)
 {
+    static_data& data = data_ref();
     fixed old_top_weight = data.blending_transparency_top_weight;
     data.blending_transparency_top_weight = top_weight;
 
@@ -479,6 +559,7 @@ void set_blending_transparency_top_weight(fixed top_weight)
 
 fixed blending_transparency_bottom_weight()
 {
+    static_data& data = data_ref();
     fixed result = data.blending_transparency_bottom_weight;
 
     if(result == -1)
@@ -491,6 +572,7 @@ fixed blending_transparency_bottom_weight()
 
 void set_blending_transparency_bottom_weight(fixed bottom_weight)
 {
+    static_data& data = data_ref();
     fixed old_bottom_weight = data.blending_transparency_bottom_weight;
     data.blending_transparency_bottom_weight = bottom_weight;
 
@@ -503,6 +585,7 @@ void set_blending_transparency_bottom_weight(fixed bottom_weight)
 
 void set_blending_transparency_weights(fixed top_weight, fixed bottom_weight)
 {
+    static_data& data = data_ref();
     fixed old_top_weight = data.blending_transparency_top_weight;
     fixed old_bottom_weight = data.blending_transparency_bottom_weight;
     data.blending_transparency_top_weight = top_weight;
@@ -518,6 +601,7 @@ void set_blending_transparency_weights(fixed top_weight, fixed bottom_weight)
 
 void reload_blending_transparency()
 {
+    static_data& data = data_ref();
     data.update_blending_transparency = true;
     data.commit = true;
 }
@@ -536,11 +620,13 @@ void fill_blending_transparency_hblank_effect_attributes(
 
 bool blending_fade_enabled()
 {
-    return data.blending_fade_enabled;
+    return data_ref().blending_fade_enabled;
 }
 
 void set_blending_fade_enabled(bool enabled)
 {
+    static_data& data = data_ref();
+
     if(data.blending_fade_enabled != enabled)
     {
         data.blending_fade_enabled = enabled;
@@ -553,11 +639,13 @@ void set_blending_fade_enabled(bool enabled)
 
 bool blending_fade_to_black()
 {
-    return data.blending_fade_to_black;
+    return data_ref().blending_fade_to_black;
 }
 
 void set_blending_fade_to_black(bool fade_to_black)
 {
+    static_data& data = data_ref();
+
     if(data.blending_fade_to_black != fade_to_black)
     {
         data.blending_fade_to_black = fade_to_black;
@@ -572,11 +660,12 @@ void set_blending_fade_to_black(bool fade_to_black)
 
 fixed blending_fade_alpha()
 {
-    return data.blending_fade_alpha;
+    return data_ref().blending_fade_alpha;
 }
 
 void set_blending_fade_alpha(fixed fade_alpha)
 {
+    static_data& data = data_ref();
     int old_fade_alpha = fixed_t<4>(data.blending_fade_alpha).data();
     data.blending_fade_alpha = fade_alpha;
 
@@ -588,6 +677,7 @@ void set_blending_fade_alpha(fixed fade_alpha)
 
 void reload_blending_fade()
 {
+    static_data& data = data_ref();
     set_blending_fade_enabled(fixed_t<4>(data.blending_fade_alpha).data());
     data.commit = true;
 }
@@ -604,17 +694,20 @@ void fill_blending_fade_hblank_effect_alphas(const class blending_fade_alpha* bl
 
 void update_windows_visible_bgs()
 {
+    static_data& data = data_ref();
     data.update_windows_visible_bgs = true;
     data.commit = true;
 }
 
 bool show_sprites_in_window(int window)
 {
-    return data.windows_flags[window] & unsigned(hw::display::window_flag::SPRITES);
+    return data_ref().windows_flags[window] & unsigned(hw::display::window_flag::SPRITES);
 }
 
 void set_show_sprites_in_window(int window, bool show)
 {
+    static_data& data = data_ref();
+
     if(show)
     {
         data.windows_flags[window] |= unsigned(hw::display::window_flag::SPRITES);
@@ -630,11 +723,13 @@ void set_show_sprites_in_window(int window, bool show)
 
 bool show_blending_in_window(int window)
 {
-    return data.windows_flags[window] & unsigned(hw::display::window_flag::BLENDING);
+    return data_ref().windows_flags[window] & unsigned(hw::display::window_flag::BLENDING);
 }
 
 void set_show_blending_in_window(int window, bool show)
 {
+    static_data& data = data_ref();
+
     if(show)
     {
         data.windows_flags[window] |= unsigned(hw::display::window_flag::BLENDING);
@@ -650,11 +745,12 @@ void set_show_blending_in_window(int window, bool show)
 
 bool show_all_in_window(int window)
 {
-    return data.windows_flags[window] & unsigned(hw::display::window_flag::ALL);
+    return data_ref().windows_flags[window] & unsigned(hw::display::window_flag::ALL);
 }
 
 void set_show_all_in_window(int window)
 {
+    static_data& data = data_ref();
     data.windows_flags[window] |= unsigned(hw::display::window_flag::ALL);
     data.commit_windows_flags = true;
     data.commit = true;
@@ -662,12 +758,13 @@ void set_show_all_in_window(int window)
 
 bool show_nothing_in_window(int window)
 {
-    unsigned window_flags = data.windows_flags[window];
+    unsigned window_flags = data_ref().windows_flags[window];
     return window_flags == 0 || window_flags == unsigned(hw::display::window_flag::BLENDING);
 }
 
 void set_show_nothing_in_window(int window)
 {
+    static_data& data = data_ref();
     data.windows_flags[window] &= ~unsigned(hw::display::window_flag::ALL);
     data.commit_windows_flags = true;
     data.commit = true;
@@ -675,24 +772,24 @@ void set_show_nothing_in_window(int window)
 
 const fixed_point& rect_window_top_left(int window)
 {
-    return data.rect_windows_boundaries[window * 2];
+    return data_ref().rect_windows_boundaries[window * 2];
 }
 
 const fixed_point& rect_window_bottom_right(int window)
 {
-    return data.rect_windows_boundaries[(window * 2) + 1];
+    return data_ref().rect_windows_boundaries[(window * 2) + 1];
 }
 
 pair<int, int> rect_window_hw_horizontal_boundaries(int window)
 {
-    const point* hw_boundaries = data.rect_windows_hw_boundaries;
+    const point* hw_boundaries = data_ref().rect_windows_hw_boundaries;
     int index = window * 2;
     return make_pair(hw_boundaries[index].x(), hw_boundaries[index + 1].x());
 }
 
 pair<int, int> rect_window_hw_vertical_boundaries(int window)
 {
-    const point* hw_boundaries = data.rect_windows_hw_boundaries;
+    const point* hw_boundaries = data_ref().rect_windows_hw_boundaries;
     int index = window * 2;
     return make_pair(hw_boundaries[index].y(), hw_boundaries[index + 1].y());
 }
@@ -700,11 +797,9 @@ pair<int, int> rect_window_hw_vertical_boundaries(int window)
 void set_rect_window_top_left(int window, const fixed_point& top_left)
 {
     int index = window * 2;
-    fixed_point& old_top_left = data.rect_windows_boundaries[index];
-    point old_integer_top_left(old_top_left.x().right_shift_integer(),
-                               old_top_left.y().right_shift_integer());
-    point new_integer_top_left(top_left.x().right_shift_integer(),
-                               top_left.y().right_shift_integer());
+    fixed_point& old_top_left = data_ref().rect_windows_boundaries[index];
+    point old_integer_top_left(old_top_left.x().shift_integer(), old_top_left.y().shift_integer());
+    point new_integer_top_left(top_left.x().shift_integer(), top_left.y().shift_integer());
     old_top_left = top_left;
 
     if(old_integer_top_left != new_integer_top_left)
@@ -716,11 +811,9 @@ void set_rect_window_top_left(int window, const fixed_point& top_left)
 void set_rect_window_bottom_right(int window, const fixed_point& bottom_right)
 {
     int index = (window * 2) + 1;
-    fixed_point& old_bottom_right = data.rect_windows_boundaries[index];
-    point old_integer_bottom_right(old_bottom_right.x().right_shift_integer(),
-                                   old_bottom_right.y().right_shift_integer());
-    point new_integer_bottom_right(bottom_right.x().right_shift_integer(),
-                                   bottom_right.y().right_shift_integer());
+    fixed_point& old_bottom_right = data_ref().rect_windows_boundaries[index];
+    point old_integer_bottom_right(old_bottom_right.x().shift_integer(), old_bottom_right.y().shift_integer());
+    point new_integer_bottom_right(bottom_right.x().shift_integer(), bottom_right.y().shift_integer());
     old_bottom_right = bottom_right;
 
     if(old_integer_bottom_right != new_integer_bottom_right)
@@ -731,11 +824,13 @@ void set_rect_window_bottom_right(int window, const fixed_point& bottom_right)
 
 const optional<camera_ptr>& rect_window_camera(int window)
 {
-    return data.rect_windows_camera[window];
+    return data_ref().rect_windows_camera[window];
 }
 
 void set_rect_window_camera(int window, camera_ptr&& camera)
 {
+    static_data& data = data_ref();
+
     if(data.rect_windows_camera[window] != camera)
     {
         data.rect_windows_camera[window] = move(camera);
@@ -748,6 +843,8 @@ void set_rect_window_camera(int window, camera_ptr&& camera)
 
 void remove_rect_window_camera(int window)
 {
+    static_data& data = data_ref();
+
     if(data.rect_windows_camera[window])
     {
         data.rect_windows_camera[window].reset();
@@ -760,6 +857,7 @@ void remove_rect_window_camera(int window)
 
 void reload_rect_windows_boundaries()
 {
+    static_data& data = data_ref();
     data.commit_windows_boundaries = true;
     data.commit = true;
 }
@@ -777,8 +875,8 @@ void fill_rect_window_hblank_effect_horizontal_boundaries(
         {
             fixed first_fixed = horizontal_boundaries_ptr[index].first;
             fixed second_fixed = horizontal_boundaries_ptr[index].second;
-            int first_integer = clamp(first_fixed.right_shift_integer(), 0, display::width());
-            int second_integer = clamp(second_fixed.right_shift_integer(), 0, display::width());
+            int first_integer = clamp(first_fixed.shift_integer(), 0, display::width());
+            int second_integer = clamp(second_fixed.shift_integer(), 0, display::width());
             hw::display::set_window_boundaries(first_integer, second_integer, dest_ptr[index]);
         }
     }
@@ -788,8 +886,8 @@ void fill_rect_window_hblank_effect_horizontal_boundaries(
         {
             fixed first_fixed = horizontal_boundaries_ptr[index].first;
             fixed second_fixed = base_second + horizontal_boundaries_ptr[index].second;
-            int first_integer = clamp(first_fixed.right_shift_integer(), 0, display::width());
-            int second_integer = clamp(second_fixed.right_shift_integer(), 0, display::width());
+            int first_integer = clamp(first_fixed.shift_integer(), 0, display::width());
+            int second_integer = clamp(second_fixed.shift_integer(), 0, display::width());
             hw::display::set_window_boundaries(first_integer, second_integer, dest_ptr[index]);
         }
     }
@@ -799,8 +897,8 @@ void fill_rect_window_hblank_effect_horizontal_boundaries(
         {
             fixed first_fixed = base_first + horizontal_boundaries_ptr[index].first;
             fixed second_fixed = horizontal_boundaries_ptr[index].second;
-            int first_integer = clamp(first_fixed.right_shift_integer(), 0, display::width());
-            int second_integer = clamp(second_fixed.right_shift_integer(), 0, display::width());
+            int first_integer = clamp(first_fixed.shift_integer(), 0, display::width());
+            int second_integer = clamp(second_fixed.shift_integer(), 0, display::width());
             hw::display::set_window_boundaries(first_integer, second_integer, dest_ptr[index]);
         }
     }
@@ -810,8 +908,8 @@ void fill_rect_window_hblank_effect_horizontal_boundaries(
         {
             fixed first_fixed = base_first + horizontal_boundaries_ptr[index].first;
             fixed second_fixed = base_second + horizontal_boundaries_ptr[index].second;
-            int first_integer = clamp(first_fixed.right_shift_integer(), 0, display::width());
-            int second_integer = clamp(second_fixed.right_shift_integer(), 0, display::width());
+            int first_integer = clamp(first_fixed.shift_integer(), 0, display::width());
+            int second_integer = clamp(second_fixed.shift_integer(), 0, display::width());
             hw::display::set_window_boundaries(first_integer, second_integer, dest_ptr[index]);
         }
     }
@@ -830,8 +928,8 @@ void fill_rect_window_hblank_effect_vertical_boundaries(
         {
             fixed first_fixed = vertical_boundaries_ptr[index].first;
             fixed second_fixed = vertical_boundaries_ptr[index].second;
-            int first_integer = clamp(first_fixed.right_shift_integer(), 0, display::height());
-            int second_integer = clamp(second_fixed.right_shift_integer(), 0, display::height());
+            int first_integer = clamp(first_fixed.shift_integer(), 0, display::height());
+            int second_integer = clamp(second_fixed.shift_integer(), 0, display::height());
             hw::display::set_window_boundaries(first_integer, second_integer, dest_ptr[index]);
         }
     }
@@ -841,8 +939,8 @@ void fill_rect_window_hblank_effect_vertical_boundaries(
         {
             fixed first_fixed = vertical_boundaries_ptr[index].first;
             fixed second_fixed = base_second + vertical_boundaries_ptr[index].second;
-            int first_integer = clamp(first_fixed.right_shift_integer(), 0, display::height());
-            int second_integer = clamp(second_fixed.right_shift_integer(), 0, display::height());
+            int first_integer = clamp(first_fixed.shift_integer(), 0, display::height());
+            int second_integer = clamp(second_fixed.shift_integer(), 0, display::height());
             hw::display::set_window_boundaries(first_integer, second_integer, dest_ptr[index]);
         }
     }
@@ -852,8 +950,8 @@ void fill_rect_window_hblank_effect_vertical_boundaries(
         {
             fixed first_fixed = base_first + vertical_boundaries_ptr[index].first;
             fixed second_fixed = vertical_boundaries_ptr[index].second;
-            int first_integer = clamp(first_fixed.right_shift_integer(), 0, display::height());
-            int second_integer = clamp(second_fixed.right_shift_integer(), 0, display::height());
+            int first_integer = clamp(first_fixed.shift_integer(), 0, display::height());
+            int second_integer = clamp(second_fixed.shift_integer(), 0, display::height());
             hw::display::set_window_boundaries(first_integer, second_integer, dest_ptr[index]);
         }
     }
@@ -863,8 +961,8 @@ void fill_rect_window_hblank_effect_vertical_boundaries(
         {
             fixed first_fixed = base_first + vertical_boundaries_ptr[index].first;
             fixed second_fixed = base_second + vertical_boundaries_ptr[index].second;
-            int first_integer = clamp(first_fixed.right_shift_integer(), 0, display::height());
-            int second_integer = clamp(second_fixed.right_shift_integer(), 0, display::height());
+            int first_integer = clamp(first_fixed.shift_integer(), 0, display::height());
+            int second_integer = clamp(second_fixed.shift_integer(), 0, display::height());
             hw::display::set_window_boundaries(first_integer, second_integer, dest_ptr[index]);
         }
     }
@@ -872,11 +970,13 @@ void fill_rect_window_hblank_effect_vertical_boundaries(
 
 bool inside_window_enabled(int window)
 {
-    return data.inside_windows_enabled[window];
+    return data_ref().inside_windows_enabled[window];
 }
 
 void set_inside_window_enabled(int window, bool enabled)
 {
+    static_data& data = data_ref();
+
     if(data.inside_windows_enabled[window] != enabled)
     {
         data.inside_windows_enabled[window] = enabled;
@@ -887,11 +987,13 @@ void set_inside_window_enabled(int window, bool enabled)
 
 bool green_swap_enabled()
 {
-    return data.green_swap_enabled;
+    return data_ref().green_swap_enabled;
 }
 
 void set_green_swap_enabled(bool enabled)
 {
+    static_data& data = data_ref();
+
     if(data.green_swap_enabled != enabled)
     {
         data.green_swap_enabled = enabled;
@@ -902,6 +1004,7 @@ void set_green_swap_enabled(bool enabled)
 
 void reload_green_swap()
 {
+    static_data& data = data_ref();
     data.commit_green_swap = true;
     data.commit = true;
 }
@@ -916,6 +1019,8 @@ void fill_green_swap_hblank_effect_states(const bool* states_ptr, uint16_t* dest
 
 void update_cameras()
 {
+    static_data& data = data_ref();
+
     for(int index = 0, limit = hw::display::rect_windows_count(); index < limit; ++index)
     {
         if(data.rect_windows_camera[index])
@@ -929,6 +1034,8 @@ void update_cameras()
 
 void update()
 {
+    static_data& data = data_ref();
+
     if(data.commit)
     {
         bool update_blending_cnt = false;
@@ -980,8 +1087,8 @@ void update()
 
         if(data.commit_display)
         {
-            hw::display::set_display(
-                    data.mode, data.sprites_visible, data.enabled_bgs, data.inside_windows_enabled, data.display_cnt);
+            hw::display::set_display(data.mode, data.bitmap_page_flipped, data.sprites_visible, data.enabled_bgs,
+                                     data.inside_windows_enabled, data.display_cnt);
         }
 
         if(data.update_mosaic)
@@ -1007,6 +1114,8 @@ void update()
 
 void commit()
 {
+    static_data& data = data_ref();
+
     if(data.commit)
     {
         data.commit = false;
@@ -1015,6 +1124,11 @@ void commit()
         {
             hw::display::commit_display(data.display_cnt);
             data.commit_display = false;
+
+            if(void** bitmap_painter_page_ptr = data.bitmap_painter_page_ptr)
+            {
+                *bitmap_painter_page_ptr = hw::display::hidden_bitmap_page();
+            }
         }
 
         hw::display::commit_mosaic(data.mosaic_cnt);
@@ -1054,6 +1168,7 @@ void wake_up()
 
 void stop()
 {
+    static_data& data = data_ref();
     data.update_blending_mode = false;
     data.update_blending_layers = false;
     data.update_windows_visible_bgs = false;

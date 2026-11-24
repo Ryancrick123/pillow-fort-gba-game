@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -29,7 +29,7 @@ class sprite_ptr;
 /**
  * @brief Creates sprite_ptr objects with custom attributes.
  *
- * If some of the attributes of the sprite to create differs from the default ones,
+ * If some of the attributes of the sprite to create differ from the default ones,
  * using this class improves performance.
  *
  * @ingroup sprite
@@ -374,7 +374,7 @@ public:
      * Sprites with higher z orders are drawn first (and therefore can be covered by later sprites).
      *
      * Sprites are grouped in layers depending of their background priority and z order,
-     * so to reduce memory usage and improve performance, please use as less unique z orders as possible.
+     * so to reduce memory usage and improve performance, please use as few unique z orders as possible.
      */
     [[nodiscard]] int z_order() const
     {
@@ -387,7 +387,7 @@ public:
      * Sprites with higher z orders are drawn first (and therefore can be covered by later sprites).
      *
      * Sprites are grouped in layers depending of their background priority and z order,
-     * so to reduce memory usage and improve performance, please use as less unique z orders as possible.
+     * so to reduce memory usage and improve performance, please use as few unique z orders as possible.
      *
      * @param z_order Priority relative to other sprites in the range [-32767..32767].
      * @return Reference to this.
@@ -779,4 +779,3 @@ private:
 }
 
 #endif
-

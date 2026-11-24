@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -12,6 +12,9 @@ namespace bn::hw::link
 
 namespace
 {
+    constexpr irq::id timer_id = audio::timer_free(1) ? irq::id::TIMER1 : irq::id::TIMER0;
+    constexpr bool free_timers = audio::timer_free(0) || audio::timer_free(1);
+
     class static_data
     {
 
@@ -27,12 +30,21 @@ namespace
         bool active = false;
     };
 
-    BN_DATA_EWRAM_BSS static_data data;
+    alignas(static_data) BN_DATA_EWRAM_BSS char data_buffer[sizeof(static_data)];
+
+    [[nodiscard]] static_data& data_ref()
+    {
+        return *reinterpret_cast<static_data*>(data_buffer);
+    }
 
     void _check_active()
     {
+        static_data& data = data_ref();
+
         if(! data.active)
         {
+            BN_BASIC_ASSERT(free_timers, "There's no free timers");
+
             enable();
             data.active = true;
         }
@@ -40,6 +52,8 @@ namespace
 
     void _sendDataCallback()
     {
+        static_data& data = data_ref();
+
         if(! data.blockSendMessages)
         {
             for(uint16_t message : data.sendMessages)
@@ -53,6 +67,8 @@ namespace
 
     void _receiveResponseCallback(const lc::LinkResponse& response)
     {
+        static_data& data = data_ref();
+
         if(data.blockReceivedMessages)
         {
             if(data.secondReceivedMessages.full())
@@ -87,6 +103,8 @@ namespace
 
     void _resetStateCallback()
     {
+        static_data& data = data_ref();
+
         if(data.blockSendMessages)
         {
             data.clearSendMessages = true;
@@ -111,35 +129,47 @@ namespace
 
 void init()
 {
-    ::new(static_cast<void*>(&data)) static_data();
+    ::new(static_cast<void*>(data_buffer)) static_data();
 
-    data.connection.init(_sendDataCallback, _receiveResponseCallback, _resetStateCallback);
-    irq::set_isr(irq::id::SERIAL, _serial_intr);
-    irq::set_isr(irq::id::TIMER1, _timer_intr);
-    data.connection.deactivate();
+    if(free_timers)
+    {
+        static_data& data = data_ref();
+        data.connection.init(_sendDataCallback, _receiveResponseCallback, _resetStateCallback);
+        irq::set_isr(irq::id::SERIAL, _serial_intr);
+        irq::set_isr(timer_id, _timer_intr);
+        data.connection.deactivate();
+    }
 }
 
 bool active()
 {
-    return data.active;
+    return data_ref().active;
 }
 
 void enable()
 {
-    data.connection.activate();
-    irq::enable(irq::id::SERIAL);
-    irq::enable(irq::id::TIMER1);
+    if(free_timers)
+    {
+        data_ref().connection.activate();
+        irq::enable(irq::id::SERIAL);
+        irq::enable(timer_id);
+    }
 }
 
 void disable()
 {
-    irq::disable(irq::id::TIMER1);
-    irq::disable(irq::id::SERIAL);
-    data.connection.deactivate();
+    if(free_timers)
+    {
+        irq::disable(timer_id);
+        irq::disable(irq::id::SERIAL);
+        data_ref().connection.deactivate();
+    }
 }
 
 void deactivate()
 {
+    static_data& data = data_ref();
+
     if(data.active)
     {
         data.active = false;
@@ -149,6 +179,7 @@ void deactivate()
 
 void send(int data_to_send)
 {
+    static_data& data = data_ref();
     _check_active();
 
     BN_BARRIER;
@@ -184,6 +215,7 @@ void send(int data_to_send)
 
 bool receive(lc::LinkResponse& response)
 {
+    static_data& data = data_ref();
     _check_active();
 
     BN_BARRIER;
@@ -224,19 +256,25 @@ bool receive(lc::LinkResponse& response)
 
 void _serial_intr()
 {
-    data.connection._onSerial();
+    if(free_timers)
+    {
+        data_ref().connection._onSerial();
+    }
 }
 
 void _timer_intr()
 {
-    data.connection._onTimer();
+    if(free_timers)
+    {
+        data_ref().connection._onTimer();
+    }
 }
 
 void commit()
 {
-    if(data.active)
+    if(free_timers)
     {
-        data.connection._onVBlank();
+        data_ref().connection._onVBlank();
     }
 }
 

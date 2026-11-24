@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -110,6 +110,11 @@ public:
     }
 
     /**
+     * @brief Sets the number of times the action must be updated before the next tiles change.
+     */
+    void set_next_change_updates(int next_change_updates);
+
+    /**
      * @brief Returns the sprite_tiles_item used to create the new sprite tiles to use by the given sprite_ptr.
      */
     [[nodiscard]] const sprite_tiles_item& tiles_item() const
@@ -134,8 +139,15 @@ public:
     }
 
     /**
+     * @brief Specifies if the action must be updated forever or not.
+     */
+    void set_update_forever(bool forever);
+
+    /**
      * @brief Returns the current index of the given graphics_indexes
      * (not the current index of the tile set to reference in the given tiles_item).
+     *
+     * This index is the one to be used on the next tiles change. It can be out of bounds if the action is done.
      */
     [[nodiscard]] int current_index() const
     {
@@ -143,12 +155,28 @@ public:
     }
 
     /**
-     * @brief Returns the current index of the tile set to reference in the given tiles_item.
+     * @brief Sets the current index of the given graphics_indexes
+     * (not the current index of the tile set to reference in the given tiles_item).
      */
-    [[nodiscard]] int current_graphics_index() const
+    void set_current_index(int current_index)
     {
-        return graphics_indexes()[_current_graphics_indexes_index];
+        set_current_index(current_index, true);
     }
+
+    /**
+     * @brief Sets the current index of the given graphics_indexes
+     * (not the current index of the tile set to reference in the given tiles_item).
+     * @param current_index New index of the given graphics_indexes.
+     * @param update_sprite_now Specifies if the sprite must be updated now or on the next tiles change.
+     */
+    void set_current_index(int current_index, bool update_sprite_now);
+
+    /**
+     * @brief Returns the current index of the tile set to reference in the given tiles_item.
+     *
+     * This index is the one to be used on the next tiles change.
+     */
+    [[nodiscard]] int current_graphics_index() const;
 
 protected:
     /// @cond DO_NOT_DOCUMENT
@@ -183,7 +211,7 @@ private:
 template<int MaxSize>
 class sprite_animate_action : public isprite_animate_action
 {
-    static_assert(MaxSize > 1);
+    static_assert(MaxSize > 0);
 
 public:
     /**
@@ -540,6 +568,11 @@ public:
     }
 
     /**
+     * @brief Sets the number of times the action must be updated before the next tiles change.
+     */
+    void set_next_change_updates(int next_change_updates);
+
+    /**
      * @brief Returns the tile sets to use by the given sprite_ptr.
      */
     [[nodiscard]] const ivector<sprite_tiles_ptr>& tiles_list() const
@@ -556,7 +589,14 @@ public:
     }
 
     /**
+     * @brief Specifies if the action must be updated forever or not.
+     */
+    void set_update_forever(bool forever);
+
+    /**
      * @brief Returns the current index of the given tile sets.
+     *
+     * This index is the one to be used on the next tiles change. It can be out of bounds if the action is done.
      */
     [[nodiscard]] int current_index() const
     {
@@ -564,12 +604,26 @@ public:
     }
 
     /**
-     * @brief Returns the current tile set.
+     * @brief Sets the current index of the given tile sets.
      */
-    [[nodiscard]] const sprite_tiles_ptr& current_tiles() const
+    void set_current_index(int current_index)
     {
-        return tiles_list()[_current_tiles_list_index];
+        set_current_index(current_index, true);
     }
+
+    /**
+     * @brief Sets the current index of the given tile sets.
+     * @param current_index New index of the given tile sets.
+     * @param update_sprite_now Specifies if the sprite must be updated now or on the next tiles change.
+     */
+    void set_current_index(int current_index, bool update_sprite_now);
+
+    /**
+     * @brief Returns the current tile set.
+     *
+     * This tile set is the one to be used on the next tiles change.
+     */
+    [[nodiscard]] const sprite_tiles_ptr& current_tiles() const;
 
 protected:
     /// @cond DO_NOT_DOCUMENT
@@ -608,7 +662,7 @@ private:
 template<int MaxSize>
 class sprite_cached_animate_action : public isprite_cached_animate_action
 {
-    static_assert(MaxSize > 1);
+    static_assert(MaxSize > 0);
 
 public:
     /**

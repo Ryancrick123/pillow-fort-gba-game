@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -152,90 +152,178 @@
     }
 
     #ifndef BN_ASSERT
-        #if BN_CFG_ASSERT_SHOW_DIAGNOSTIC
-            #define BN_ASSERT(condition, ...) \
-                do \
-                { \
-                    if consteval \
+        #if BN_CFG_ASSERT_SHOW_GENERAL_INFO
+            #if BN_CFG_ASSERT_SHOW_DIAGNOSTIC
+                #define BN_ASSERT(condition, ...) \
+                    do \
                     { \
-                        assert(condition); \
-                    } \
-                    else \
-                    { \
-                        if(! (condition)) [[unlikely]] \
+                        if consteval \
                         { \
-                            _bn::assert::show_args(#condition, BN_ASSERT_FILE, __func__, __LINE__ __VA_OPT__(, ) __VA_ARGS__); \
+                            assert(condition); \
                         } \
-                    } \
-                } while(false)
+                        else \
+                        { \
+                            if(! (condition)) [[unlikely]] \
+                            { \
+                                _bn::assert::show_args(#condition, BN_ASSERT_FILE, __func__, __LINE__ __VA_OPT__(, ) __VA_ARGS__); \
+                            } \
+                        } \
+                    } while(false)
+            #else
+                #define BN_ASSERT(condition, ...) \
+                    do \
+                    { \
+                        if consteval \
+                        { \
+                            assert(condition); \
+                        } \
+                        else \
+                        { \
+                            if(! (condition)) [[unlikely]] \
+                            { \
+                                _bn::assert::show(BN_ASSERT_FILE, __LINE__); \
+                            } \
+                        } \
+                    } while(false)
+            #endif
         #else
-            #define BN_ASSERT(condition, ...) \
-                do \
-                { \
-                    if consteval \
+            #if BN_CFG_ASSERT_SHOW_DIAGNOSTIC
+                #define BN_ASSERT(condition, ...) \
+                    do \
                     { \
-                        assert(condition); \
-                    } \
-                    else \
-                    { \
-                        if(! (condition)) [[unlikely]] \
+                        if consteval \
                         { \
-                            _bn::assert::show(BN_ASSERT_FILE, __LINE__); \
+                            assert(condition); \
                         } \
-                    } \
-                } while(false)
+                        else \
+                        { \
+                            if(! (condition)) [[unlikely]] \
+                            { \
+                                _bn::assert::show_args(#condition, "", "", -1 __VA_OPT__(, ) __VA_ARGS__); \
+                            } \
+                        } \
+                    } while(false)
+            #else
+                #define BN_ASSERT(condition, ...) \
+                    do \
+                    { \
+                        if consteval \
+                        { \
+                            assert(condition); \
+                        } \
+                        else \
+                        { \
+                            if(! (condition)) [[unlikely]] \
+                            { \
+                                _bn::assert::show("", -1); \
+                            } \
+                        } \
+                    } while(false)
+            #endif
         #endif
     #endif
 
     #ifndef BN_BASIC_ASSERT
-        #if BN_CFG_ASSERT_SHOW_DIAGNOSTIC
-            #define BN_BASIC_ASSERT(condition, ...) \
-                do \
-                { \
-                    if consteval \
+        #if BN_CFG_ASSERT_SHOW_GENERAL_INFO
+            #if BN_CFG_ASSERT_SHOW_DIAGNOSTIC
+                #define BN_BASIC_ASSERT(condition, ...) \
+                    do \
                     { \
-                        assert(condition); \
-                    } \
-                    else \
-                    { \
-                        if(! (condition)) [[unlikely]] \
+                        if consteval \
                         { \
-                            _bn::assert::show_args("", BN_ASSERT_FILE, __func__, __LINE__ __VA_OPT__(, ) __VA_ARGS__); \
+                            assert(condition); \
                         } \
-                    } \
-                } while(false)
+                        else \
+                        { \
+                            if(! (condition)) [[unlikely]] \
+                            { \
+                                _bn::assert::show_args("", BN_ASSERT_FILE, __func__, __LINE__ __VA_OPT__(, ) __VA_ARGS__); \
+                            } \
+                        } \
+                    } while(false)
+            #else
+                #define BN_BASIC_ASSERT BN_ASSERT
+            #endif
         #else
-            #define BN_BASIC_ASSERT BN_ASSERT
+            #if BN_CFG_ASSERT_SHOW_DIAGNOSTIC
+                #define BN_BASIC_ASSERT(condition, ...) \
+                    do \
+                    { \
+                        if consteval \
+                        { \
+                            assert(condition); \
+                        } \
+                        else \
+                        { \
+                            if(! (condition)) [[unlikely]] \
+                            { \
+                                _bn::assert::show_args("", "", "", -1 __VA_OPT__(, ) __VA_ARGS__); \
+                            } \
+                        } \
+                    } while(false)
+            #else
+                #define BN_BASIC_ASSERT BN_ASSERT
+            #endif
         #endif
     #endif
 
     #ifndef BN_ERROR
-        #if BN_CFG_ASSERT_SHOW_DIAGNOSTIC
-            #define BN_ERROR(...) \
-                do \
-                { \
-                    if consteval \
+        #if BN_CFG_ASSERT_SHOW_GENERAL_INFO
+            #if BN_CFG_ASSERT_SHOW_DIAGNOSTIC
+                #define BN_ERROR(...) \
+                    do \
                     { \
-                        assert(false); \
-                    } \
-                    else \
+                        if consteval \
+                        { \
+                            assert(false); \
+                        } \
+                        else \
+                        { \
+                            _bn::assert::show_args("", BN_ASSERT_FILE, __func__, __LINE__ __VA_OPT__(, ) __VA_ARGS__); \
+                        } \
+                    } while(false)
+            #else
+                #define BN_ERROR(...) \
+                    do \
                     { \
-                        _bn::assert::show_args("", BN_ASSERT_FILE, __func__, __LINE__ __VA_OPT__(, ) __VA_ARGS__); \
-                    } \
-                } while(false)
+                        if consteval \
+                        { \
+                            assert(false); \
+                        } \
+                        else \
+                        { \
+                            _bn::assert::show(BN_ASSERT_FILE, __LINE__); \
+                        } \
+                    } while(false)
+            #endif
         #else
-            #define BN_ERROR(...) \
-                do \
-                { \
-                    if consteval \
+            #if BN_CFG_ASSERT_SHOW_DIAGNOSTIC
+                #define BN_ERROR(...) \
+                    do \
                     { \
-                        assert(false); \
-                    } \
-                    else \
+                        if consteval \
+                        { \
+                            assert(false); \
+                        } \
+                        else \
+                        { \
+                            _bn::assert::show_args("", "", "", -1 __VA_OPT__(, ) __VA_ARGS__); \
+                        } \
+                    } while(false)
+            #else
+                #define BN_ERROR(...) \
+                    do \
                     { \
-                        _bn::assert::show(BN_ASSERT_FILE, __LINE__); \
-                    } \
-                } while(false)
+                        if consteval \
+                        { \
+                            assert(false); \
+                        } \
+                        else \
+                        { \
+                            _bn::assert::show("", -1); \
+                        } \
+                    } while(false)
+            #endif
         #endif
     #endif
 
@@ -265,7 +353,7 @@
         void show_args(const char* condition_msg, const char* file, const char* function, int line,
                        const Arg& arg)
         {
-            char istring_buffer[BN_CFG_ASSERT_BUFFER_SIZE];
+            alignas(int) char istring_buffer[BN_CFG_ASSERT_BUFFER_SIZE];
             bn::istring_base istring(istring_buffer);
             bn::ostringstream string_stream(istring);
             string_stream.append(arg);
@@ -276,7 +364,7 @@
         void show_args(const char* condition_msg, const char* file, const char* function, int line,
                        const Arg1& arg1, const Arg2& arg2)
         {
-            char istring_buffer[BN_CFG_ASSERT_BUFFER_SIZE];
+            alignas(int) char istring_buffer[BN_CFG_ASSERT_BUFFER_SIZE];
             bn::istring_base istring(istring_buffer);
             bn::ostringstream string_stream(istring);
             string_stream.append(arg1);
@@ -288,7 +376,7 @@
         void show_args(const char* condition_msg, const char* file, const char* function, int line,
                        const Args&... args)
         {
-            char istring_buffer[BN_CFG_ASSERT_BUFFER_SIZE];
+            alignas(int) char istring_buffer[BN_CFG_ASSERT_BUFFER_SIZE];
             bn::istring_base istring(istring_buffer);
             bn::ostringstream string_stream(istring);
             string_stream.append_args(args...);

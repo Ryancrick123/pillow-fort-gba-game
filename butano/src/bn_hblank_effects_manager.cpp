@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -18,6 +18,7 @@
 #include "bn_rect_window_vertical_boundaries_hbe_handler.h"
 #include "bn_regular_bg_attributes_hbe_handler.h"
 #include "bn_affine_bg_attributes_hbe_handler.h"
+#include "bn_bitmap_bg_attributes_hbe_handler.h"
 #include "bn_regular_bg_horizontal_position_hbe_handler.h"
 #include "bn_affine_bg_pivot_horizontal_position_hbe_handler.h"
 #include "bn_regular_bg_vertical_position_hbe_handler.h"
@@ -61,6 +62,33 @@
 #include "bn_affine_bg_dx_register_hbe_ptr.cpp.h"
 #include "bn_affine_bg_dy_register_hbe_ptr.cpp.h"
 #include "bn_affine_bg_mat_attributes_hbe_ptr.cpp.h"
+#include "bn_palette_bitmap_bg_attributes_hbe_ptr.cpp.h"
+#include "bn_palette_bitmap_bg_pivot_position_hbe_ptr.cpp.h"
+#include "bn_palette_bitmap_bg_pa_register_hbe_ptr.cpp.h"
+#include "bn_palette_bitmap_bg_pb_register_hbe_ptr.cpp.h"
+#include "bn_palette_bitmap_bg_pc_register_hbe_ptr.cpp.h"
+#include "bn_palette_bitmap_bg_pd_register_hbe_ptr.cpp.h"
+#include "bn_palette_bitmap_bg_dx_register_hbe_ptr.cpp.h"
+#include "bn_palette_bitmap_bg_dy_register_hbe_ptr.cpp.h"
+#include "bn_palette_bitmap_bg_mat_attributes_hbe_ptr.cpp.h"
+#include "bn_sp_direct_bitmap_bg_attributes_hbe_ptr.cpp.h"
+#include "bn_sp_direct_bitmap_bg_pivot_position_hbe_ptr.cpp.h"
+#include "bn_sp_direct_bitmap_bg_pa_register_hbe_ptr.cpp.h"
+#include "bn_sp_direct_bitmap_bg_pb_register_hbe_ptr.cpp.h"
+#include "bn_sp_direct_bitmap_bg_pc_register_hbe_ptr.cpp.h"
+#include "bn_sp_direct_bitmap_bg_pd_register_hbe_ptr.cpp.h"
+#include "bn_sp_direct_bitmap_bg_dx_register_hbe_ptr.cpp.h"
+#include "bn_sp_direct_bitmap_bg_dy_register_hbe_ptr.cpp.h"
+#include "bn_sp_direct_bitmap_bg_mat_attributes_hbe_ptr.cpp.h"
+#include "bn_dp_direct_bitmap_bg_attributes_hbe_ptr.cpp.h"
+#include "bn_dp_direct_bitmap_bg_pivot_position_hbe_ptr.cpp.h"
+#include "bn_dp_direct_bitmap_bg_pa_register_hbe_ptr.cpp.h"
+#include "bn_dp_direct_bitmap_bg_pb_register_hbe_ptr.cpp.h"
+#include "bn_dp_direct_bitmap_bg_pc_register_hbe_ptr.cpp.h"
+#include "bn_dp_direct_bitmap_bg_pd_register_hbe_ptr.cpp.h"
+#include "bn_dp_direct_bitmap_bg_dx_register_hbe_ptr.cpp.h"
+#include "bn_dp_direct_bitmap_bg_dy_register_hbe_ptr.cpp.h"
+#include "bn_dp_direct_bitmap_bg_mat_attributes_hbe_ptr.cpp.h"
 #include "bn_sprite_affine_mat_attributes_hbe_ptr.cpp.h"
 #include "bn_sprite_affine_mat_pa_register_hbe_ptr.cpp.h"
 #include "bn_sprite_affine_mat_pb_register_hbe_ptr.cpp.h"
@@ -120,6 +148,9 @@ namespace
             return false;
 
         case handler_type::AFFINE_BG_ATTRIBUTES:
+            return false;
+
+        case handler_type::BITMAP_BG_ATTRIBUTES:
             return false;
 
         case handler_type::REGULAR_BG_HORIZONTAL_POSITION:
@@ -301,6 +332,10 @@ namespace
                 affine_bg_attributes_hbe_handler::setup_target(target_id, target_last_value);
                 break;
 
+            case handler_type::BITMAP_BG_ATTRIBUTES:
+                bitmap_bg_attributes_hbe_handler::setup_target(target_id, target_last_value);
+                break;
+
             case handler_type::REGULAR_BG_HORIZONTAL_POSITION:
                 regular_bg_horizontal_position_hbe_handler::setup_target(target_id, target_last_value);
                 break;
@@ -468,6 +503,9 @@ namespace
 
             case handler_type::AFFINE_BG_ATTRIBUTES:
                 return _check_update_impl<affine_bg_attributes_hbe_handler>(updated);
+
+            case handler_type::BITMAP_BG_ATTRIBUTES:
+                return _check_update_impl<bitmap_bg_attributes_hbe_handler>(updated);
 
             case handler_type::REGULAR_BG_HORIZONTAL_POSITION:
                 return _check_update_impl<regular_bg_horizontal_position_hbe_handler>(updated);
@@ -644,6 +682,10 @@ namespace
                 affine_bg_attributes_hbe_handler::show(target_id);
                 break;
 
+            case handler_type::BITMAP_BG_ATTRIBUTES:
+                bitmap_bg_attributes_hbe_handler::show(target_id);
+                break;
+
             case handler_type::REGULAR_BG_HORIZONTAL_POSITION:
                 regular_bg_horizontal_position_hbe_handler::show(target_id);
                 break;
@@ -817,6 +859,10 @@ namespace
 
             case handler_type::AFFINE_BG_ATTRIBUTES:
                 affine_bg_attributes_hbe_handler::cleanup(target_id);
+                break;
+
+            case handler_type::BITMAP_BG_ATTRIBUTES:
+                bitmap_bg_attributes_hbe_handler::cleanup(target_id);
                 break;
 
             case handler_type::REGULAR_BG_HORIZONTAL_POSITION:
@@ -1036,6 +1082,14 @@ namespace
         bool enabled = false;
     };
 
+    alignas(static_external_data) BN_DATA_EWRAM_BSS char external_data_buffer[sizeof(static_external_data)];
+
+    [[nodiscard]] static_external_data& external_data_ref()
+    {
+        return *reinterpret_cast<static_external_data*>(external_data_buffer);
+    }
+
+
     class static_internal_data
     {
 
@@ -1044,12 +1098,12 @@ namespace
         hw_entries entries_b;
     };
 
-    BN_DATA_EWRAM_BSS static_external_data external_data;
     static_internal_data internal_data;
+
 
     void _update_visible_item_index(int item_index)
     {
-        static_external_data& data = external_data;
+        static_external_data& data = external_data_ref();
         data.items[item_index].show();
 
         if(data.first_visible_item_index != max_items)
@@ -1061,7 +1115,7 @@ namespace
 
     void _update_hidden_item_index(int item_index)
     {
-        static_external_data& data = external_data;
+        static_external_data& data = external_data_ref();
         data.items[item_index].cleanup();
 
         if(item_index == data.first_visible_item_index || item_index == data.last_visible_item_index)
@@ -1073,6 +1127,7 @@ namespace
 
     [[nodiscard]] int _create(const void* values_ptr, intptr_t target_id, handler_type handler, bool optional)
     {
+        static_external_data& external_data = external_data_ref();
         BN_ASSERT(aligned<4>(values_ptr), "Values are not aligned");
 
         if(external_data.free_item_indexes.empty())
@@ -1145,8 +1200,9 @@ namespace
 
 void init()
 {
-    ::new(static_cast<void*>(&external_data)) static_external_data();
+    ::new(static_cast<void*>(external_data_buffer)) static_external_data();
 
+    static_external_data& external_data = external_data_ref();
     hw::hblank_effects::commit_entries(internal_data.entries_b);
 
     for(int index = max_items - 1; index >= 0; --index)
@@ -1167,17 +1223,17 @@ void init()
 
 int used_count()
 {
-    return external_data.free_item_indexes.available();
+    return external_data_ref().free_item_indexes.available();
 }
 
 int available_count()
 {
-    return external_data.free_item_indexes.size();
+    return external_data_ref().free_item_indexes.size();
 }
 
 void enable()
 {
-    if(external_data.enabled)
+    if(external_data_ref().enabled)
     {
         hw::hblank_effects::enable();
     }
@@ -1185,7 +1241,7 @@ void enable()
 
 void disable()
 {
-    if(external_data.enabled)
+    if(external_data_ref().enabled)
     {
         hw::hblank_effects::disable();
     }
@@ -1195,6 +1251,7 @@ void stop()
 {
     disable();
 
+    static_external_data& external_data = external_data_ref();
     external_data.first_visible_item_index = max_items - 1;
     external_data.last_visible_item_index = 0;
     external_data.update = false;
@@ -1219,12 +1276,13 @@ int create_optional(const void* values_ptr, [[maybe_unused]] int values_count, i
 
 void increase_usages(int id)
 {
-    item_type& item = external_data.items[id];
+    item_type& item = external_data_ref().items[id];
     ++item.usages;
 }
 
 void decrease_usages(int id)
 {
+    static_external_data& external_data = external_data_ref();
     item_type& item = external_data.items[id];
     --item.usages;
 
@@ -1256,7 +1314,7 @@ void decrease_usages(int id)
 
 const void* values_ref(int id)
 {
-    const item_type& item = external_data.items[id];
+    const item_type& item = external_data_ref().items[id];
     return item.values_ptr;
 }
 
@@ -1266,6 +1324,7 @@ void set_values_ref(int id, const void* values_ptr, [[maybe_unused]] int values_
               "Invalid values count: ", values_count, " - ", display::height());
     BN_ASSERT(aligned<4>(values_ptr), "Values are not aligned");
 
+    static_external_data& external_data = external_data_ref();
     item_type& item = external_data.items[id];
     item.values_ptr = values_ptr;
     item.update = true;
@@ -1278,6 +1337,7 @@ void set_values_ref(int id, const void* values_ptr, [[maybe_unused]] int values_
 
 void reload_values_ref(int id)
 {
+    static_external_data& external_data = external_data_ref();
     item_type& item = external_data.items[id];
     item.update = true;
 
@@ -1289,12 +1349,13 @@ void reload_values_ref(int id)
 
 [[nodiscard]] bool visible(int id)
 {
-    const item_type& item = external_data.items[id];
+    const item_type& item = external_data_ref().items[id];
     return item.visible;
 }
 
 void set_visible(int id, bool visible)
 {
+    static_external_data& external_data = external_data_ref();
     item_type& item = external_data.items[id];
 
     if(visible != item.visible)
@@ -1315,6 +1376,7 @@ void set_visible(int id, bool visible)
 
 void update()
 {
+    static_external_data& external_data = external_data_ref();
     bool update = external_data.update;
     external_data.update = false;
 
@@ -1396,6 +1458,8 @@ void update()
 
 bool commit()
 {
+    static_external_data& external_data = external_data_ref();
+
     if(external_data.commit)
     {
         external_data.commit = false;

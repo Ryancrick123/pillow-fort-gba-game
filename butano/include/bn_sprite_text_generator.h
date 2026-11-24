@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -269,7 +269,7 @@ public:
 
     /**
      * @brief Indicates if this sprite_text_generator must generate one sprite per character or
-     * print multiple characters in each output sprite, generating as less sprites as possible.
+     * print multiple characters in each output sprite, generating as few sprites as possible.
      */
     [[nodiscard]] bool one_sprite_per_character() const
     {
@@ -278,7 +278,7 @@ public:
 
     /**
      * @brief Sets if this sprite_text_generator must generate one sprite per character or
-     * print multiple characters in each output sprite, generating as less sprites as possible.
+     * print multiple characters in each output sprite, generating as few sprites as possible.
      */
     void set_one_sprite_per_character(bool one_sprite_per_character)
     {

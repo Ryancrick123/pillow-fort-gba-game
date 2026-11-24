@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -13,7 +13,7 @@
  *
  * The examples assume that you have at least basic knowledge about:
  * * Modern C++ (Butano is based on modern C++ concepts like shared ownership, RAII, standard containers...).
- * * Old school 2D graphics (what are sprites, backgrounds, color palettes...).
+ * * Old school 2D graphics (what are sprites, backgrounds, color palettes, etc.).
  * * Basics of retro game development (at least to know that floating point usage is a no-no and things like that).
  *
  * Deep knowledge of GBA hardware is not required, as Butano wraps most of the functionality in its own classes.
@@ -76,13 +76,19 @@
  *
  * Real time clock (RTC) showcase (if your cart has one).
  *
- * <td> **Dynamic affine background**
+ * <td> **Dual page direct bitmap BGs**
+ *
+ * @image html examples_dp_direct_bitmap_bgs.png
+ *
+ * Shows how to use dual page direct bitmap backgrounds with Butano.
+ *
+ * <tr><td> **Dynamic affine background**
  *
  * @image html examples_dynamic_affine_bg.png
  *
  * Basic dynamic affine background example.
  *
- * <tr><td> **Dynamic regular background**
+ * <td> **Dynamic regular background**
  *
  * @image html examples_dynamic_regular_bg.png
  *
@@ -94,13 +100,13 @@
  *
  * Shows how to call an external tool from the project's `Makefile`.
  *
- * <td> @ref green_swap
+ * <tr><td> @ref green_swap
  *
  * @image html examples_green_swap.png
  *
  * See how it looks this undocumented graphic effect.
  *
- * <tr><td> **HDMA palette**
+ * <td> **HDMA palette**
  *
  * @image html examples_hdma_palette.png
  *
@@ -112,13 +118,13 @@
  *
  * Simple keypad status demo.
  *
- * <td> @ref link
+ * <tr><td> @ref link
  *
  * @image html examples_link.png
  *
  * Multiplayer communication through a link cable.
  *
- * <tr><td> @ref log
+ * <td> @ref log
  *
  * @image html examples_log.png
  *
@@ -130,13 +136,13 @@
  *
  * Sprite against map collision example.
  *
- * <td> **Mode 7**
+ * <tr><td> **Mode 7**
  *
  * @image html examples_mode_7.png
  *
  * Basic SNES mode 7 like background example.
  *
- * <tr><td> @ref mosaic
+ * <td> @ref mosaic
  *
  * @image html examples_mosaic.png
  *
@@ -148,19 +154,25 @@
  *
  * Showcases multiple color palette effects.
  *
+ * <tr><td> @ref palette_bitmap_bg
+ *
+ * @image html examples_palette_bitmap_bgs.png
+ *
+ * Shows how to use palette bitmap backgrounds with Butano.
+ *
  * <td> **Flat polygons**
  *
  * @image html examples_polygons.png
  *
  * Showcases flat polygons rendering with sprites.
  *
- * <tr><td> @ref profiler
+ * <td> @ref profiler
  *
  * @image html examples_profiler.png
  *
  * Basic code blocks profiling.
  *
- * <td> @ref regular_bg
+ * <tr><td> @ref regular_bg
  *
  * @image html examples_regular_bgs.png
  *
@@ -172,11 +184,17 @@
  *
  * Simple random number generation example.
  *
- * <tr><td> @ref rumble
+ * <td> @ref rumble
  *
  * @image html examples_rumble.png
  *
  * Vibration showcase (if your cart supports it).
+ *
+ * <tr><td> **Single page direct bitmap BGs**
+ *
+ * @image html examples_sp_direct_bitmap_bgs.png
+ *
+ * Shows how to use single page direct bitmap backgrounds with Butano.
  *
  * <td> @ref affine_mat "Sprite affine matrices"
  *

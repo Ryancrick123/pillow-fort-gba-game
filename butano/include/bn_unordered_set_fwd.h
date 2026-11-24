@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -22,7 +22,7 @@ namespace bn
      *
      * Can be used as a reference type for all bn::unordered_set containers containing a specific type.
      *
-     * Unlike `std::unordered_set`, it doesn't offer pointer stability when moving or erasing elements.
+     * Unlike `std::unordered_set`, it doesn't offer pointer stability when erasing elements.
      *
      * @tparam Key Element type.
      * @tparam KeyHash Functor used to calculate the hash of a given key.
@@ -38,7 +38,7 @@ namespace bn
      *
      * It doesn't throw exceptions. Instead, asserts are used to ensure valid usage.
      *
-     * Unlike `std::unordered_set`, it doesn't offer pointer stability when moving or erasing elements.
+     * Unlike `std::unordered_set`, it doesn't offer pointer stability when erasing elements.
      *
      * @tparam Key Element type.
      * @tparam MaxSize Maximum number of elements that can be stored.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -152,7 +152,8 @@ optional<regular_bg_map_ptr> regular_bg_builder::release_map_optional()
 size regular_bg_builder::_dimensions() const
 {
     const regular_bg_item* item = _item.get();
-    return item ? item->map_item().dimensions() : _map->dimensions();
+    size cell_dimensions = item ? item->map_item().dimensions() : _map->dimensions();
+    return cell_dimensions * 8;
 }
 
 }

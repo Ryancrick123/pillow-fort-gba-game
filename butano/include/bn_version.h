@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -23,7 +23,7 @@
  * @ingroup other
  */
 #ifndef BN_VERSION_MAJOR
-    #define BN_VERSION_MAJOR 18
+    #define BN_VERSION_MAJOR 21
 #endif
 
 /**
@@ -34,7 +34,7 @@
  * @ingroup other
  */
 #ifndef BN_VERSION_MINOR
-    #define BN_VERSION_MINOR 7
+    #define BN_VERSION_MINOR 8
 #endif
 
 /**
@@ -45,7 +45,7 @@
  * @ingroup other
  */
 #ifndef BN_VERSION_PATCH
-    #define BN_VERSION_PATCH 1
+    #define BN_VERSION_PATCH 0
 #endif
 
 /**
@@ -56,7 +56,7 @@
  * @ingroup other
  */
 #ifndef BN_VERSION_STRING
-    #define BN_VERSION_STRING "18.7.1"
+    #define BN_VERSION_STRING "21.8.0"
 #endif
 
 /**

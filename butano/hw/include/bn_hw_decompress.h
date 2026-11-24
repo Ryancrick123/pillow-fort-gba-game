@@ -1,12 +1,12 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
 #ifndef BN_HW_DECOMPRESS_H
 #define BN_HW_DECOMPRESS_H
 
-#include "bn_common.h"
+#include "bn_hw_tonc.h"
 #include "../3rd_party/cult-of-gba-bios/include/cult-of-gba-bios.h"
 
 namespace bn::hw::decompress
@@ -28,7 +28,7 @@ namespace bn::hw::decompress
 
     inline void huff(const void* src, void* dst)
     {
-        swi_HuffUnCompReadNormal(src, dst);
+        HuffUnComp(src, dst);
     }
 }
 

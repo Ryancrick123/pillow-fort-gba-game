@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
 #ifndef BN_AUDIO_MANAGER_H
 #define BN_AUDIO_MANAGER_H
 
+#include "bn_span.h"
 #include "bn_fixed.h"
 #include "bn_optional.h"
 #include "bn_dmg_music_master_volume.h"
@@ -16,6 +17,7 @@ namespace bn
     class sound_item;
     class dmg_music_item;
     class dmg_music_position;
+    enum class audio_mixing_rate : uint8_t;
 }
 
 namespace bn::audio_manager
@@ -68,6 +70,14 @@ namespace bn::audio_manager
 
     void play_jingle(music_item item, fixed volume);
 
+    void stop_jingle();
+
+    [[nodiscard]] bool jingle_paused();
+
+    void pause_jingle();
+
+    void resume_jingle();
+
     [[nodiscard]] fixed jingle_volume();
 
     void set_jingle_volume(fixed volume);
@@ -118,6 +128,10 @@ namespace bn::audio_manager
 
     [[nodiscard]] uint16_t play_sound(int priority, sound_item item, fixed volume, fixed speed, fixed panning);
 
+    [[nodiscard]] int play_sound_optional(int priority, sound_item item);
+
+    [[nodiscard]] int play_sound_optional(int priority, sound_item item, fixed volume, fixed speed, fixed panning);
+
     void stop_sound(uint16_t handle);
 
     void release_sound(uint16_t handle);
@@ -141,15 +155,29 @@ namespace bn::audio_manager
 
     // other
 
+    [[nodiscard]] span<const audio_mixing_rate> available_mixing_rates();
+
+    [[nodiscard]] audio_mixing_rate mixing_rate();
+
+    void set_mixing_rate(audio_mixing_rate mixing_rate);
+
     [[nodiscard]] bool update_on_vblank();
 
     void set_update_on_vblank(bool update_on_vblank);
+
+    [[nodiscard]] bool event_handler_enabled();
+
+    void set_event_handler_enabled(bool enabled);
+
+    [[nodiscard]] span<uint8_t> event_ids();
 
     void update();
 
     void execute_commands();
 
-    void commit();
+    void vblank_commit();
+
+    void delayed_commit();
 
     void stop();
 }

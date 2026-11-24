@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -43,6 +43,14 @@ inline void start_hdma(int channel, const uint16_t* source, int half_words, uint
     REG_DMA[channel].src = source;
     REG_DMA[channel].dst = destination;
     REG_DMA[channel].cnt = unsigned(half_words) | DMA_HDMA;
+}
+
+inline void start_hdma_irq(int channel, const uint16_t* source, int half_words, uint16_t* destination)
+{
+    REG_DMA[channel].cnt = 0;
+    REG_DMA[channel].src = source;
+    REG_DMA[channel].dst = destination;
+    REG_DMA[channel].cnt = unsigned(half_words) | DMA_HDMA | DMA_IRQ;
 }
 
 inline void stop_hdma(int channel)

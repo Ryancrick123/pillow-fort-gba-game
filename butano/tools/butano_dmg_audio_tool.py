@@ -1,5 +1,5 @@
 """
-Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
 zlib License, see LICENSE file.
 """
 
@@ -7,6 +7,7 @@ import os
 import json
 import sys
 
+import file_tools
 from file_info import FileInfo
 from pool import create_pool
 
@@ -58,7 +59,7 @@ class DmgAudioFileInfo:
             elif self.__file_name_ext == '.s3m':
                 self.__execute_s3m2gbt_command(output_tag, output_file_path)
             else:
-                file_size = self.__execute_vgm2gba_command(output_tag, output_file_path)
+                file_size = self.__execute_advgm_converter_command(output_tag, output_file_path)
                 music_type = 'VGM'
 
             header_file_path = self.__write_header(build_folder_path, output_tag, music_type)
@@ -99,14 +100,14 @@ class DmgAudioFileInfo:
             sys.stdout = sys.__stdout__
             raise
 
-    def __execute_vgm2gba_command(self, output_tag, output_file_path):
+    def __execute_advgm_converter_command(self, output_tag, output_file_path):
         import io
-        from vgm2gba import vgm2gba
+        from advgm import advgm_converter
 
         sys.stdout = io.StringIO()
 
         try:
-            vgm2gba.convert_file_c_array(self.__file_path, output_file_path, output_tag)
+            advgm_converter.convert_file_c_array(self.__file_path, output_file_path, output_tag)
             sys.stdout = sys.__stdout__
 
             total_size = -1
@@ -136,23 +137,24 @@ class DmgAudioFileInfo:
         name = self.__file_name_no_ext
         header_file_path = build_folder_path + '/bn_dmg_music_items_' + name + '.h'
 
-        with open(header_file_path, 'w') as header_file:
-            include_guard = 'BN_DMG_MUSIC_ITEMS_' + name.upper() + '_H'
-            header_file.write('#ifndef ' + include_guard + '\n')
-            header_file.write('#define ' + include_guard + '\n')
-            header_file.write('\n')
-            header_file.write('#include "bn_dmg_music_item.h"' + '\n')
-            header_file.write('\n')
-            header_file.write('extern const uint8_t ' + output_tag + '[];' + '\n')
-            header_file.write('\n')
-            header_file.write('namespace bn::dmg_music_items' + '\n')
-            header_file.write('{' + '\n')
-            header_file.write('    constexpr inline dmg_music_item ' + name + '(*' + output_tag +
-                              ', dmg_music_type::' + music_type + ');' + '\n')
-            header_file.write('}' + '\n')
-            header_file.write('\n')
-            header_file.write('#endif' + '\n')
-            header_file.write('\n')
+        include_guard = 'BN_DMG_MUSIC_ITEMS_' + name.upper() + '_H'
+        header_file = '#ifndef ' + include_guard + '\n'
+        header_file += '#define ' + include_guard + '\n'
+        header_file += '\n'
+        header_file += '#include "bn_dmg_music_item.h"' + '\n'
+        header_file += '\n'
+        header_file += 'extern const uint8_t ' + output_tag + '[];' + '\n'
+        header_file += '\n'
+        header_file += 'namespace bn::dmg_music_items' + '\n'
+        header_file += '{' + '\n'
+        header_file += '    constexpr inline dmg_music_item ' + name + '(*' + output_tag + \
+                       ', dmg_music_type::' + music_type + ');' + '\n'
+        header_file += '}' + '\n'
+        header_file += '\n'
+        header_file += '#endif' + '\n'
+        header_file += '\n'
+
+        file_tools.write_file_if_changed(header_file_path, header_file)
 
         return header_file_path
 
@@ -230,8 +232,8 @@ def list_dmg_audio_file_infos(audio_paths, build_folder_path):
     return audio_file_infos
 
 
-def process_dmg_audio(audio_paths, build_folder_path):
-    if len(audio_paths) == 0:
+def process_dmg_audio(backend, audio_paths, build_folder_path):
+    if backend != 'default' or len(audio_paths) == 0:
         return
 
     audio_file_infos = list_dmg_audio_file_infos(audio_paths, build_folder_path)

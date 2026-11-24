@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -23,7 +23,7 @@ namespace bn
 
 namespace
 {
-    constexpr best_fit_allocator::size_type alignment_bytes = sizeof(int);
+    constexpr best_fit_allocator::size_type alignment_bytes = sizeof(uint64_t);
 
     [[nodiscard]] best_fit_allocator::size_type _aligned_bytes(best_fit_allocator::size_type bytes)
     {
@@ -131,7 +131,14 @@ void* best_fit_allocator::calloc(size_type num, size_type bytes)
     BN_ASSERT(num >= 0, "Invalid num: ", num);
     BN_ASSERT(bytes >= 0, "Invalid bytes: ", bytes);
 
-    bytes *= num;
+    uint64_t uint64_bytes = uint64_t(num) * uint64_t(bytes);
+
+    if(uint64_bytes > bn::numeric_limits<size_type>::max()) [[unlikely]]
+    {
+        return nullptr;
+    }
+
+    bytes = size_type(uint64_bytes);
 
     void* result = alloc(bytes);
 
@@ -152,6 +159,8 @@ void* best_fit_allocator::realloc(void* ptr, size_type new_bytes)
     }
 
     BN_ASSERT(new_bytes >= 0, "Invalid new bytes: ", new_bytes);
+
+    new_bytes = _aligned_bytes(new_bytes);
 
     uint8_t* item_ptr = static_cast<uint8_t*>(ptr) - _sizeof_used_item;
     auto item = reinterpret_cast<item_type*>(item_ptr);
@@ -303,7 +312,18 @@ void best_fit_allocator::reset(void* start, size_type bytes)
     if(bytes >= _sizeof_free_item)
     {
         BN_BASIC_ASSERT(start, "Start is null");
-        BN_ASSERT(aligned<alignment_bytes>(start), "Start is not aligned");
+
+        if(! aligned<alignment_bytes>(start))
+        {
+            if(aligned<alignment_bytes / 2>(start))
+            {
+                uint32_t* new_start = reinterpret_cast<uint32_t*>(start) + 1;
+                reset(new_start, bytes - 4);
+                return;
+            }
+
+            BN_ERROR("Start is not aligned");
+        }
 
         auto first_item = reinterpret_cast<item_type*>(start);
         first_item->previous = nullptr;

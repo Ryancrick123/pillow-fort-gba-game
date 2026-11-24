@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -49,6 +49,28 @@ public:
      */
     constexpr explicit unique_ptr(pointer ptr) :
         _ptr(ptr)
+    {
+    }
+
+    /**
+     * @brief Constructor.
+     * @param ptr Pointer to the object to manage.
+     * @param deleter Object which disposes the object to manage when the unique_ptr goes out of scope.
+     */
+    constexpr unique_ptr(pointer ptr, const Deleter& deleter) :
+        _ptr(ptr),
+        _deleter(deleter)
+    {
+    }
+
+    /**
+     * @brief Constructor.
+     * @param ptr Pointer to the object to manage.
+     * @param deleter Object which disposes the object to manage when the unique_ptr goes out of scope.
+     */
+    constexpr unique_ptr(pointer ptr, Deleter&& deleter) :
+        _ptr(ptr),
+        _deleter(move(deleter))
     {
     }
 
@@ -143,7 +165,8 @@ public:
     }
 
     /**
-     * @brief Returns a const reference to the managed object deleter.
+     * @brief Returns a const reference to the object which disposes the managed object
+     * when the unique_ptr goes out of scope.
      */
     [[nodiscard]] constexpr const Deleter& get_deleter() const
     {
@@ -151,7 +174,8 @@ public:
     }
 
     /**
-     * @brief Returns a reference to the managed object deleter.
+     * @brief Returns a reference to the object which disposes the managed object
+     * when the unique_ptr goes out of scope.
      */
     [[nodiscard]] constexpr Deleter& get_deleter()
     {
@@ -214,8 +238,11 @@ public:
      */
     constexpr void reset()
     {
-        _deleter(_ptr);
-        _ptr = nullptr;
+        if(_ptr)
+        {
+            _deleter(_ptr);
+            _ptr = nullptr;
+        }
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -34,6 +34,31 @@ public:
     using const_reverse_iterator = bn::reverse_iterator<const_iterator>; //!< Const reverse iterator alias.
 
     static constexpr size_type npos = -1; //!< Exact meaning depends on context.
+
+    /**
+     * @brief Returns an istring pointing to the given null-terminated characters array.
+     *
+     * The characters are not copied but referenced, so they should outlive the istring
+     * to avoid dangling references.
+     */
+    template<int MaxSize>
+    [[nodiscard]] static constexpr istring from_char_array(char (&char_array_ref)[MaxSize])
+    {
+        static_assert(MaxSize > 1);
+
+        const_pointer char_array_ptr = char_array_ref;
+        int size = 0;
+
+        while(*char_array_ptr)
+        {
+            ++char_array_ptr;
+            ++size;
+
+            BN_BASIC_ASSERT(size < MaxSize, "Non null-terminated char array");
+        }
+
+        return istring(char_array_ref, size, MaxSize - 1);
+    }
 
     /**
      * @brief Copy assignment operator.
@@ -825,6 +850,18 @@ public:
     }
 
     /**
+     * @brief Resizes the istring without filling new characters or replacing the old null character.
+     * @param count New size.
+     */
+    constexpr void unsafe_resize(size_type count)
+    {
+        BN_ASSERT(count >= 0 && count <= _max_size, "Invalid count: ", count, " - ", _max_size);
+
+        _data[count] = 0;
+        _size = count;
+    }
+
+    /**
      * @brief Resizes the istring to a size less or equal than the previous one.
      * @param count New size.
      */
@@ -845,7 +882,7 @@ public:
         if(_data != other._data)
         {
             BN_ASSERT(_size <= other._max_size, "Invalid size: ", _size, " - ", other._max_size);
-            BN_ASSERT(_max_size <= other._size, "Invalid max size: ", _max_size, " - ", other._size);
+            BN_ASSERT(_max_size >= other._size, "Invalid max size: ", _max_size, " - ", other._size);
 
             pointer min_data = nullptr;
             pointer max_data = nullptr;

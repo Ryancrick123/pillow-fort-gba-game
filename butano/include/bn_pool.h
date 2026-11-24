@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -45,13 +45,13 @@ namespace bn
 {
 
 template<typename Type>
-class ipool : public igeneric_pool<sizeof(generic_pool_element<sizeof(Type)>)>
+class ipool : public igeneric_pool<sizeof(generic_pool_element<sizeof(Type), alignof(Type)>)>
 {
 
 protected:
     /// @cond DO_NOT_DOCUMENT
 
-    using element = generic_pool_element<sizeof(Type)>;
+    using element = generic_pool_element<sizeof(Type), alignof(Type)>;
 
     /// @endcond
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -8,6 +8,7 @@
 
 #include "bn_fixed_fwd.h"
 #include "bn_optional_fwd.h"
+#include "bn_config_sprites.h"
 #include "bn_fixed_point_fwd.h"
 #include "bn_intrusive_list_fwd.h"
 
@@ -184,6 +185,10 @@ namespace sprites_manager
 
     void set_third_attributes(id_type id, const sprite_third_attributes& third_attributes);
 
+    [[nodiscard]] bool bg_sorting_enabled();
+
+    void set_bg_sorting_enabled(bool bg_sorting_enabled);
+
     int reserved_handles_count();
 
     void set_reserved_handles_count(int reserved_handles_count);
@@ -222,12 +227,14 @@ namespace sprites_manager
 
     void commit(bool use_dma);
 
-    BN_CODE_IWRAM void _check_items_on_screen(intrusive_list<sorted_sprites::layer>& layers);
+    #if BN_CFG_SPRITES_USE_IWRAM
+        BN_CODE_IWRAM void _check_items_on_screen(intrusive_list<sorted_sprites::layer>& layers);
 
-    [[nodiscard]] BN_CODE_IWRAM int _rebuild_handles_impl(
-            int reserved_handles_count, void* hw_handles, intrusive_list<sorted_sprites::layer>& layers);
+        [[nodiscard]] BN_CODE_IWRAM int _rebuild_handles_impl(
+                int reserved_handles_count, void* hw_handles, intrusive_list<sorted_sprites::layer>& layers);
 
-    [[nodiscard]] BN_CODE_IWRAM bool _update_cameras_impl(intrusive_list<sorted_sprites::layer>& layers);
+        [[nodiscard]] BN_CODE_IWRAM bool _update_cameras_impl(intrusive_list<sorted_sprites::layer>& layers);
+    #endif
 }
 
 }

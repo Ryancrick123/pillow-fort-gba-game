@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -96,7 +96,7 @@ public:
 
     /**
      * @brief Sets the minute part of the time.
-     * @param minute Minute part of the time, in the range [0..23].
+     * @param minute Minute part of the time, in the range [0..59].
      */
     constexpr void set_minute(int minute)
     {
@@ -115,7 +115,7 @@ public:
 
     /**
      * @brief Sets the second part of the time.
-     * @param second Second part of the time, in the range [0..23].
+     * @param second Second part of the time, in the range [0..59].
      */
     constexpr void set_second(int second)
     {

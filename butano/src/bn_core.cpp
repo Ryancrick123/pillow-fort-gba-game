@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -11,7 +11,6 @@
 #include "bn_keypad.h"
 #include "bn_memory.h"
 #include "bn_timers.h"
-#include "bn_version.h"
 #include "bn_profiler.h"
 #include "bn_system_font.h"
 #include "bn_bgs_manager.h"
@@ -19,6 +18,7 @@
 #include "bn_link_manager.h"
 #include "bn_gpio_manager.h"
 #include "bn_audio_manager.h"
+#include "bn_config_assert.h"
 #include "bn_keypad_manager.h"
 #include "bn_memory_manager.h"
 #include "bn_display_manager.h"
@@ -32,8 +32,8 @@
 #include "../hw/include/bn_hw_core.h"
 #include "../hw/include/bn_hw_gpio.h"
 #include "../hw/include/bn_hw_sram.h"
+#include "../hw/include/bn_hw_audio.h"
 #include "../hw/include/bn_hw_timer.h"
-#include "../hw/include/bn_hw_memory.h"
 #include "../hw/include/bn_hw_game_pak.h"
 #include "../hw/include/bn_hw_hblank_effects.h"
 
@@ -125,6 +125,7 @@ namespace
     {
 
     public:
+        update_callback_type update_callback = nullptr;
         vblank_callback_type vblank_callback = nullptr;
         #if BN_CFG_ASSERT_ENABLED
             assert::callback_type assert_callback = nullptr;
@@ -132,22 +133,31 @@ namespace
         timer cpu_usage_timer;
         ticks last_ticks;
         bn::system_font system_font;
-        string_view assert_tag = BN_VERSION_STRING " " BN_TOOLCHAIN_TAG;
+        string_view assert_tag = BN_CFG_ASSERT_TAG;
         int skip_frames = 0;
         int last_update_frames = 1;
         int missed_frames = 0;
-        bool dma_enabled = true;
+        bool dma_enabled = hw::audio::dma_channel_free(3);
         bool slow_game_pak = false;
         volatile bool waiting_for_vblank = false;
+        volatile bool vblank_intr_active = false;
     };
 
-    BN_DATA_EWRAM_BSS static_data data;
+    alignas(static_data) BN_DATA_EWRAM_BSS char data_buffer[sizeof(static_data)];
+
+    [[nodiscard]] static_data& data_ref()
+    {
+        return *reinterpret_cast<static_data*>(data_buffer);
+    }
 
     void enable()
     {
         hblank_effects_manager::enable();
         link_manager::enable();
+
         audio_manager::enable();
+        hw::irq::enable(hw::irq::id::VBLANK);
+
         hdma_manager::enable();
     }
 
@@ -157,6 +167,7 @@ namespace
 
         if(disable_vblank_irq)
         {
+            hw::irq::disable(hw::irq::id::VBLANK);
             audio_manager::disable();
         }
 
@@ -166,7 +177,7 @@ namespace
 
     void stop(bool disable_vblank_irq)
     {
-        hw::core::wait_for_vblank();
+        hw::core::wait_for_vblank(data_ref().vblank_intr_active);
 
         audio_manager::stop();
         hdma_manager::force_stop();
@@ -218,6 +229,7 @@ namespace
         hblank_effects_manager::update();
         BN_PROFILER_ENGINE_DETAILED_STOP();
 
+        static_data& data = data_ref();
         bool use_dma = data.dma_enabled && ! link_manager::active();
 
         BN_PROFILER_ENGINE_GENERAL_STOP();
@@ -225,10 +237,7 @@ namespace
         BN_BARRIER;
         result.cpu_usage_ticks = data.cpu_usage_timer.elapsed_ticks();
 
-        BN_BARRIER;
-        data.waiting_for_vblank = true;
-
-        hw::core::wait_for_vblank();
+        hw::core::wait_for_vblank(data.waiting_for_vblank);
 
         BN_BARRIER;
         data.cpu_usage_timer.restart();
@@ -271,7 +280,9 @@ namespace
         hdma_manager::update();
         BN_PROFILER_ENGINE_DETAILED_STOP();
 
-        bool hdma_running = hdma_manager::commit(use_dma);
+        hdma_manager::commit_interrupt_handler();
+
+        bool hdma_running = hdma_manager::commit_entries(use_dma);
 
         BN_PROFILER_ENGINE_DETAILED_START("eng_hblank_fx_commit");
         bool hblank_effects_running = hblank_effects_manager::commit();
@@ -305,12 +316,41 @@ namespace
         result.vblank_usage_ticks = data.cpu_usage_timer.elapsed_ticks();
 
         BN_PROFILER_ENGINE_DETAILED_START("eng_audio_commit");
-        audio_manager::commit();
+        audio_manager::delayed_commit();
         BN_PROFILER_ENGINE_DETAILED_STOP();
 
         BN_PROFILER_ENGINE_GENERAL_STOP();
 
         return result;
+    }
+
+    void _vblank_intr()
+    {
+        static_data& data = data_ref();
+        hw::audio::on_vblank();
+
+        if(data.waiting_for_vblank)
+        {
+            BN_PROFILER_ENGINE_DETAILED_START("eng_audio_update");
+            audio_manager::update();
+            BN_PROFILER_ENGINE_DETAILED_STOP();
+
+            BN_PROFILER_ENGINE_DETAILED_START("eng_audio_commit");
+            audio_manager::vblank_commit();
+            BN_PROFILER_ENGINE_DETAILED_STOP();
+
+            data.waiting_for_vblank = false;
+        }
+        else
+        {
+            hdma_manager::commit_entries(false);
+            audio_manager::vblank_commit();
+
+            ++data.missed_frames;
+        }
+
+        link_manager::commit();
+        data.vblank_intr_active = false;
     }
 }
 
@@ -331,10 +371,13 @@ void init(const string_view& keypad_commands)
 
 void init(const optional<color>& transparent_color, const string_view& keypad_commands)
 {
-    ::new(static_cast<void*>(&data)) static_data();
+    ::new(static_cast<void*>(data_buffer)) static_data();
 
     // Initial wait:
     hw::core::init();
+
+    // Init heap:
+    memory_manager::init();
 
     // Init H-Blank effects system:
     hblank_effects_manager::init();
@@ -349,12 +392,16 @@ void init(const optional<color>& transparent_color, const string_view& keypad_co
     // Init link system:
     link_manager::init();
 
+    // Init V-Blank interrupt:
+    hw::irq::set_isr(hw::irq::id::VBLANK, _vblank_intr);
+    hw::irq::enable(hw::irq::id::VBLANK);
+
     // Init audio system:
     audio_manager::init();
 
     // Init storage systems:
+    static_data& data = data_ref();
     data.slow_game_pak = hw::game_pak::init();
-    hw::memory::init();
 
     [[maybe_unused]] const char* sram_string = hw::sram::init();
 
@@ -365,7 +412,6 @@ void init(const optional<color>& transparent_color, const string_view& keypad_co
     display_manager::init();
 
     // Init high level systems:
-    memory_manager::init();
     cameras_manager::init();
     palettes_manager::init(transparent_color);
     sprite_tiles_manager::init();
@@ -391,18 +437,25 @@ void init(const optional<color>& transparent_color, const string_view& keypad_co
 
 int skip_frames()
 {
-    return data.skip_frames;
+    return data_ref().skip_frames;
 }
 
 void set_skip_frames(int skip_frames)
 {
     BN_ASSERT(skip_frames >= 0, "Invalid skip frames: ", skip_frames);
 
-    data.skip_frames = skip_frames;
+    data_ref().skip_frames = skip_frames;
 }
 
 void update()
 {
+    static_data& data = data_ref();
+
+    if(update_callback_type update_callback = data.update_callback)
+    {
+        update_callback();
+    }
+
     int update_frames = data.skip_frames + 1;
     data.last_update_frames = update_frames;
 
@@ -430,24 +483,6 @@ void update()
     BN_PROFILER_ENGINE_DETAILED_START("eng_keypad");
     keypad_manager::update();
     BN_PROFILER_ENGINE_DETAILED_STOP();
-}
-
-void on_vblank()
-{
-    if(data.waiting_for_vblank)
-    {
-        BN_PROFILER_ENGINE_DETAILED_START("eng_audio_update");
-        audio_manager::update();
-        BN_PROFILER_ENGINE_DETAILED_STOP();
-
-        data.waiting_for_vblank = false;
-    }
-    else
-    {
-        hdma_manager::commit(false);
-
-        ++data.missed_frames;
-    }
 }
 
 void sleep(keypad::key_type wake_up_key)
@@ -514,6 +549,7 @@ void hard_reset()
 
 fixed current_cpu_usage()
 {
+    static_data& data = data_ref();
     int current_cpu_usage_ticks = data.cpu_usage_timer.elapsed_ticks();
     int current_update_frames = data.skip_frames + 1;
     return fixed(current_cpu_usage_ticks) / (timers::ticks_per_frame() * current_update_frames);
@@ -521,67 +557,79 @@ fixed current_cpu_usage()
 
 int current_cpu_ticks()
 {
-    return data.cpu_usage_timer.elapsed_ticks();
+    return data_ref().cpu_usage_timer.elapsed_ticks();
 }
 
 fixed last_cpu_usage()
 {
+    static_data& data = data_ref();
     return fixed(data.last_ticks.cpu_usage_ticks) / (timers::ticks_per_frame() * data.last_update_frames);
 }
 
 int last_cpu_ticks()
 {
-    return data.last_ticks.cpu_usage_ticks;
+    return data_ref().last_ticks.cpu_usage_ticks;
 }
 
 fixed last_vblank_usage()
 {
+    static_data& data = data_ref();
     return fixed(data.last_ticks.vblank_usage_ticks) / timers::ticks_per_vblank();
 }
 
 int last_vblank_ticks()
 {
-    return data.last_ticks.vblank_usage_ticks;
+    return data_ref().last_ticks.vblank_usage_ticks;
 }
 
 int last_missed_frames()
 {
-    return data.last_ticks.missed_frames;
+    return data_ref().last_ticks.missed_frames;
+}
+
+update_callback_type update_callback()
+{
+    return data_ref().update_callback;
+}
+
+void set_update_callback(update_callback_type update_callback)
+{
+    data_ref().update_callback = update_callback;
 }
 
 vblank_callback_type vblank_callback()
 {
-    return data.vblank_callback;
+    return data_ref().vblank_callback;
 }
 
 void set_vblank_callback(vblank_callback_type vblank_callback)
 {
-    data.vblank_callback = vblank_callback;
+    data_ref().vblank_callback = vblank_callback;
 }
 
 bool slow_game_pak()
 {
-    return data.slow_game_pak;
+    return data_ref().slow_game_pak;
 }
 
 const bn::system_font& system_font()
 {
-    return data.system_font;
+    return data_ref().system_font;
 }
 
 void set_system_font(const bn::system_font& font)
 {
-    data.system_font = font;
+    data_ref().system_font = font;
 }
 
 const string_view& assert_tag()
 {
-    return data.assert_tag;
+    return data_ref().assert_tag;
 }
 
 void set_assert_tag(const string_view& assert_tag)
 {
-    data.assert_tag = assert_tag;
+    data_ref().assert_tag = assert_tag;
 }
 
 void log_stacktrace()
@@ -621,10 +669,11 @@ core_lock::~core_lock()
     keypad_manager::update();
 
     // Wait for vblank:
-    hw::core::wait_for_vblank();
+    core::static_data& data = core::data_ref();
+    hw::core::wait_for_vblank(data.vblank_intr_active);
 
     // Restart CPU usage timer:
-    core::data.cpu_usage_timer.restart();
+    data.cpu_usage_timer.restart();
 
     // Wake up display (maybe display_manager::sleep() has not been called):
     display_manager::wake_up();
@@ -641,12 +690,14 @@ namespace bn::memory
 
 bool dma_enabled()
 {
-    return core::data.dma_enabled;
+    return core::data_ref().dma_enabled;
 }
 
 void set_dma_enabled(bool dma_enabled)
 {
-    core::data.dma_enabled = dma_enabled;
+    BN_BASIC_ASSERT(hw::audio::dma_channel_free(3) || ! dma_enabled, "Not supported by the audio backend");
+
+    core::data_ref().dma_enabled = dma_enabled;
 }
 
 }
@@ -656,12 +707,12 @@ void set_dma_enabled(bool dma_enabled)
     {
         callback_type callback()
         {
-            return core::data.assert_callback;
+            return core::data_ref().assert_callback;
         }
 
         void set_callback(callback_type callback)
         {
-            core::data.assert_callback = callback;
+            core::data_ref().assert_callback = callback;
         }
     }
 
@@ -673,7 +724,9 @@ void set_dma_enabled(bool dma_enabled)
                     const char* condition, const char* file_name, const char* function, int line,
                     const bn::string_view& message)
             {
-                if(bn::assert::callback_type assert_callback = bn::core::data.assert_callback)
+                bn::core::static_data& data = bn::core::data_ref();
+
+                if(bn::assert::callback_type assert_callback = data.assert_callback)
                 {
                     assert_callback();
                 }
@@ -684,14 +737,14 @@ void set_dma_enabled(bool dma_enabled)
 
                 #ifdef BN_STACKTRACE
                     #if BN_CFG_LOG_ENABLED
-                        bn::hw::core::wait_for_vblank();
+                        bn::hw::core::wait_for_vblank(data.vblank_intr_active);
                         bn::hw::stacktrace::log(5);
                     #endif
                 #endif
 
                 while(true)
                 {
-                    bn::hw::core::wait_for_vblank();
+                    bn::hw::core::wait_for_vblank(data.vblank_intr_active);
                 }
             }
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -132,7 +132,14 @@ namespace bn
     [[nodiscard]] constexpr fixed safe_degrees_angle(fixed degrees_angle)
     {
         unsigned n = (degrees_angle / 360).unsigned_integer();
-        return degrees_angle - (n * 360);
+        fixed result = degrees_angle - (n * 360);
+
+        if(result < 0)
+        {
+            result += 360;
+        }
+
+        return result;
     }
 
     /**

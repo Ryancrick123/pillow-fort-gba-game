@@ -1,13 +1,26 @@
+
 #---------------------------------------------------------------------------------------------------------------------
 # Any extra libraries we wish to link with the project:
 #---------------------------------------------------------------------------------------------------------------------
 LIBS        := -lgcc -lstdc++ $(USERLIBS)
 
+ifeq ($(strip $(AUDIOBACKEND)),aas)
+	LIBS		+=	-lAAS
+endif
+
 #---------------------------------------------------------------------------------------------------------------------
 # List of directories containing libraries, this must be the top level containing include and lib directories:
 #---------------------------------------------------------------------------------------------------------------------
 LIBDIRS     :=	$(LIBBUTANOABS) $(LIBBUTANOABS)/hw/3rd_party/libtonc $(LIBBUTANOABS)/hw/3rd_party/libugba \
-				$(LIBBUTANOABS)/hw/3rd_party/maxmod $(USERLIBDIRS)
+				$(USERLIBDIRS)
+
+ifeq ($(strip $(AUDIOBACKEND)),maxmod)
+	LIBDIRS		+=	$(LIBBUTANOABS)/hw/3rd_party/maxmod
+endif
+
+ifeq ($(strip $(AUDIOBACKEND)),aas)
+	LIBDIRS		+=	$(LIBBUTANOABS)/hw/3rd_party/aas
+endif
 
 #---------------------------------------------------------------------------------------------------------------------
 # List of directories containing all butano source files:
@@ -20,9 +33,16 @@ BNSOURCES	:=	$(LIBBUTANOABS)/src $(LIBBUTANOABS)/hw/src \
 				$(LIBBUTANOABS)/hw/3rd_party/libugba/src \
 				$(LIBBUTANOABS)/hw/3rd_party/posprintf/src \
 				$(LIBBUTANOABS)/hw/3rd_party/agbabi/src \
+				$(LIBBUTANOABS)/hw/3rd_party/stdgba/src \
 				$(LIBBUTANOABS)/hw/3rd_party/gba-modern/src \
-				$(LIBBUTANOABS)/hw/3rd_party/cult-of-gba-bios/src \
-				$(LIBBUTANOABS)/hw/3rd_party/gbt-player/src \
-				$(LIBBUTANOABS)/hw/3rd_party/vgm-player/src \
-				$(LIBBUTANOABS)/hw/3rd_party/maxmod/source \
-				$(LIBBUTANOABS)/hw/3rd_party/maxmod/source_gba
+				$(LIBBUTANOABS)/hw/3rd_party/cult-of-gba-bios/src
+
+ifeq ($(strip $(AUDIOBACKEND)),maxmod)
+	BNSOURCES	+=	$(LIBBUTANOABS)/hw/3rd_party/maxmod/src/core \
+					$(LIBBUTANOABS)/hw/3rd_party/maxmod/src/gba
+endif
+
+ifeq ($(strip $(DMGAUDIOBACKEND)),default)
+	BNSOURCES	+=	$(LIBBUTANOABS)/hw/3rd_party/gbt-player/src \
+					$(LIBBUTANOABS)/hw/3rd_party/advgm/src
+endif

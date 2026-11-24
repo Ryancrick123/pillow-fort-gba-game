@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -12,9 +12,261 @@
  * @tableofcontents
  *
  *
- * @section changelog_18_8_0 18.8.0 (next release)
+ * @section changelog_21_9_0 21.9.0 (next release)
+ *
+ * * bn::sprite_animate_action::set_update_forever and bn::sprite_cached_animate_action::set_update_forever
+ * * bn::sprite_animate_action and bn::sprite_cached_animate_action support a single graphics index. added.
+ * * Background animate actions have the same features as sprite animate actions.
+ *
+ *
+ * @section changelog_21_8_0 21.8.0
+ *
+ * * bn::sprite_animate_action::set_current_index and bn::sprite_cached_animate_action::set_current_index
+ *   allow to update their sprite on the next tiles change.
+ * * bn::sprite_animate_action::current_graphics_index and bn::sprite_cached_animate_action::current_tiles
+ *   asserts improved.
+ * * bn::sprite_animate_action::current_index, bn::sprite_animate_action::current_graphics_index,
+ *   bn::sprite_cached_animate_action::current_index and bn::sprite_cached_animate_action::current_tiles
+ *   documentation improved.
+ * * <a href="https://dare-to-square.com">Dare to Square</a> added to `README.md`.
+ *
+ *
+ * @section changelog_21_7_1 21.7.1
+ *
+ * Standard containers swap maximum size check fixed (thanks yeon!).
+ *
+ *
+ * @section changelog_21_7_0 21.7.0
+ *
+ * * bn::istring::unsafe_resize added.
+ * * bn::ostringstream::append with numbers optimized.
+ * * Logging and assert messages building optimized.
+ * * bn::memory::clear C++26 build warning fixed.
+ *
+ *
+ * @section changelog_21_6_0 21.6.0
+ *
+ * * bn::sound::play_optional and bn::sound::play_with_priority_optional added.
+ * * bn::sound_handle::set_speed and bn::sound_handle::set_panning don't crash with inactive sounds.
+ * * <a href="https://github.com/copyrat90/advgm">advgm</a> updated to 0.3.0. Remember to rebuild your project
+ *   after updating.
+ * * bn::best_fit_allocator::realloc alignment fixed.
+ * * bn::best_fit_allocator::calloc overflow fixed.
+ * * bn::best_fit_allocator::realloc documentation improved.
+ *
+ *
+ * @section changelog_21_5_1 21.5.1
+ *
+ * Wait for V-Blank fixed (thanks yeon and AntonioND!).
+ *
+ *
+ * @section changelog_21_5_0 21.5.0
+ *
+ * * Multiplications, divisions and memory operations like `memcpy` and `memset` optimized thanks to
+ *   <a href="https://github.com/felixjones/stdgba">stdgba</a>.
+ * * <a href="https://blocksds.skylyrac.net/maxmod/index.html">Maxmod</a> updated to 1.19.1.
+ * * <a href="https://github.com/copyrat90/advgm">advgm</a> updated to 0.2.0.
+ * * Header files generated from tools are not written if their content has not changed.
+ * * Heap test fixed.
+ *
+ *
+ * @section changelog_21_4_0 21.4.0
+ *
+ * * <a href="https://github.com/copyrat90/gbadev-ja-test">VGM player</a> replaced with
+ *   <a href="https://github.com/copyrat90/advgm">advgm</a>.
+ * * The @ref import_dmg_music import guide explains how to import `*.vgm` files made with
+ *   <a href="https://github.com/tildearrow/furnace">Furnace</a>.
+ * * @ref faq_sprites_draw_tiles and @ref faq_backgrounds_draw_tiles questions added to the @ref faq page.
+ * * <a href="https://web.archive.org/web/20201205020502/https://research.kudelskisecurity.com/2020/07/28/the-definitive-guide-to-modulo-bias-and-how-to-avoid-it/">Modulo bias</a>
+ *   links fixed.
+ *
+ *
+ * @section changelog_21_3_0 21.3.0
+ *
+ * * bn::regular_bg_tiles_ptr::overwrite_tile, bn::affine_bg_tiles_ptr::overwrite_tile and
+ *   @ref BN_CFG_BG_BLOCKS_MAX_OVERWRITE_TILES added.
+ * * bn::regular_bg_tiles_ptr::bpp added.
+ * * bn::regular_bg_tiles_ptr::offset and bn::affine_bg_tiles_ptr::offset added.
+ * * @ref BN_CFG_AUDIO_MAX_SOUND_CHANNELS and @ref BN_CFG_SPRITE_TILES_MAX_ITEMS no longer have to be a power of two.
+ * * VGM music wave sample fixed (thanks yeon!).
+ * * Animated tiles scene added to `regular_bgs` and `affine_bgs` examples.
+ * * bn::core callbacks documentation improved.
+ * * @ref import_generic_data section added to the import guide.
+ * * @ref faq_backgrounds_animated question improved.
+ * * <a href="https://wonderful.asie.pl/">Wonderful Toolchain</a> added to `README.md`.
+ *
+ *
+ * @section changelog_21_2_0 21.2.0
+ *
+ * * bn::regular_bg_tiles_item can contain more than 1024 tiles.
+ * * bn::affine_bg_tiles_item can contain more than 256 tiles.
+ * * Tiles offset can now be specified when creating bn::regular_bg_tiles_ptr and bn::affine_bg_tiles_ptr objects.
+ * * bn::affine_bg_tiles_item::valid_tiles_count fixed.
+ * * @ref faq_backgrounds_tiles_offset question added to the @ref faq page.
+ *
+ *
+ * @section changelog_21_1_0 21.1.0
+ *
+ * * bn::span<const bn::color> overloads for bn::bg_palette_ptr::set_colors and
+ *   bn::sprite_palette_ptr::set_colors added.
+ * * bn::palette_bitmap_item overloads for bn::palette_bitmap_bg_painter::unsafe_blit,
+ *   bn::palette_bitmap_bg_painter::blit, bn::palette_bitmap_bg_painter::unsafe_draw and
+ *   bn::palette_bitmap_bg_painter::draw added.
+ * * @ref faq_backgrounds_regular_wrapping and @ref faq_backgrounds_metatiles questions added to the @ref faq page.
+ * * <a href="https://nostabyte.itch.io/bloxorzgba">Bloxorz</a> added to `README.md`.
+ * * <a href="https://blocksds.skylyrac.net/maxmod/index.html">Maxmod</a> links updated.
+ *
+ *
+ * @section changelog_21_0_0 21.0.0
+ *
+ * * Palette bitmap backgrounds support. Check the `palette_bitmap_bgs` example
+ *   and the @ref import_image import guide to see how to use them.
+ * * Single page direct bitmap backgrounds support. Check the `sp_direct_bitmap_bgs` example
+ *   and the @ref import_image import guide to see how to use them.
+ * * Dual page direct bitmap backgrounds support. Check the `dp_direct_bitmap_bgs` example
+ *   and the @ref import_image import guide to see how to use them.
+ * * bn::sprites::bg_sorting_enabled and bn::sprites::set_bg_sorting_enabled added.
+ *   Check the `sprites` example to see how to create sprite masks with them.
+ * * bn::memory::vram_safe_copy added.
+ * * bn::clip_line added.
+ * * `const` `vram` methods added for bn::regular_bg_tiles_ptr, bn::regular_bg_map_ptr,
+ *   bn::affine_bg_tiles_ptr, bn::affine_bg_map_ptr and bn::sprite_tiles_ptr.
+ * * Sprite tiles are allocated at the end of VRAM.
+ * * Affine backgrounds setup optimized.
+ * * @ref faq_sprites_max_scale question added to the @ref faq page.
+ * * @ref faq_backgrounds_animated question improved.
+ * * <a href="https://blocksds.skylyrac.net/maxmod/index.html">Maxmod</a> links updated.
+ *
+ *
+ * @section changelog_20_3_2 20.3.2
+ *
+ * @ref BN_CFG_SPRITE_TILES_LOG_ENABLED and @ref BN_CFG_BG_BLOCKS_LOG_ENABLED fixed.
+ *
+ *
+ * @section changelog_20_3_1 20.3.1
+ *
+ * * <a href="https://github.com/stuij/apex-audio-system">AAS</a> processed audio size log removed since it was broken.
+ * * `audio_player` example shows the audio backend.
+ * * <a href="https://gvaliente.itch.io/rr-project">RR Project</a> added to `README.md`.
+ *
+ *
+ * @section changelog_20_3_0 20.3.0
+ *
+ * * bn::unique_ptr constructors with a deleter added.
+ * * bn::unique_ptr doesn't call the deleter if it doesn't contain a managed object.
+ * * bn::unordered_map and bn::unordered_set documentation improved.
+ * * @ref faq_donate question added to the @ref faq page.
+ *
+ *
+ * @section changelog_20_2_0 20.2.0
+ *
+ * * Custom palette effects added. Check the `palettes` example to see how to apply them.
+ * * bn::log_level and @ref BN_LOG_LEVEL added.
+ * * bn::pool alignment fixed.
+ * * <a href="https://michaelchase.itch.io/heartwrench-advance">Heartwrench Advance</a> added to `README.md`.
+ *
+ *
+ * @section changelog_20_1_0 20.1.0
+ *
+ * * bn::fixed::shift_integer, bn::fixed::shift_multiplication, bn::fixed::unsafe_shift_multiplication,
+ *   bn::fixed::unsafe_shift_multiplication, bn::fixed::shift_division and bn::fixed::unsafe_shift_division added.
+ * * bn::fixed::left_shift and bn::fixed::right_shift added.
+ * * <a href="https://blocksds.skylyrac.net/maxmod/index.html">Maxmod</a> updated to 1.14.0.
+ * * bn::best_fit_allocator alignment increased from 4 to 8 bytes.
+ * * ROM usage reduced (thanks yeon!).
+ * * bn::bg_maps and bn::bg_tiles documentation improved.
+ * * Assets tool typo fixed (thanks alope107!).
+ * * @ref faq_sprites_top_left, @ref faq_backgrounds_top_left and @ref faq_audio_music_crash questions improved.
+ * * <a href="https://github.com/copyrat90/butano-ldtk">butano-ldtk</a> added to `README.md`.
+ *
+ *
+ * @section changelog_20_0_0 20.0.0
+ *
+ * * Butano now uses <a href="https://blocksds.skylyrac.net">BlocksDS's</a>
+ *   <a href="https://blocksds.skylyrac.net/maxmod/index.html">Maxmod fork</a> for Direct Sound audio playback:
+ *   it provides new features, bug fixes and reduced IWRAM usage.
+ * * Audio events support added. Check
+ *   <a href="https://blocksds.skylyrac.net/maxmod/md_documentation_2using__song__events.html">Maxmod documentation</a>
+ *   and the `audio` example to see how to insert and read audio events.
+ * * bn::audio_mixing_rate, bn::audio::available_mixing_rates, bn::audio::mixing_rate and bn::audio::set_mixing_rate added.
+ * * bn::jingle::pause, bn::jingle::resume and bn::jingle::stop added.
+ * * bn::core::update_callback and bn::core::set_update_callback added.
+ * * bn::memory::copy and bn::memory::clear array overloads added.
+ * * bn::regular_bg_builder and bn::affine_bg_builder top-left coordinates fixed.
+ * * Mixing rate can be changed in the `audio_player` example.
+ *
+ *
+ * @section changelog_19_5_0 19.5.0
+ *
+ * * bn::istring::from_char_array added.
+ * * bn::istring_base public constructor documentation improved.
+ * * @ref faq_screen_pixels question added to the @ref faq page.
+ *
+ *
+ * @section changelog_19_4_1 19.4.1
+ *
+ * Files in audio folders with unknown extensions are ignored.
+ *
+ *
+ * @section changelog_19_4_0 19.4.0
+ *
+ * * <a href="https://www.coranac.com/man/tonclib">Tonclib</a> updated to 1.4.5.
+ * * <a href="https://maxmod.org">Maxmod</a> updated to 2.1.0.
+ * * bn::safe_degrees_angle fixed.
+ *
+ *
+ * @section changelog_19_3_0 19.3.0
+ *
+ * * bn::hdma::high_priority_interrupt_handler, bn::hdma::set_high_priority_interrupt_handler and
+ *   @ref BN_CFG_HDMA_HIGH_PRIORITY_IRQ_ENABLED added.
+ * * GCC 15 build fixed (thanks asie!).
+ * * Huffman decompression is implemented by the BIOS to avoid relying on decompiled code.
+ * * bn::time::set_minute and bn::time::set_second documentation fixed.
+ *
+ *
+ * @section changelog_19_2_0 19.2.0
+ *
+ * * bn::ivector::insert, bn::ilist::insert and bn::iforward_list::insert_after overloads added.
+ * * @ref BN_CFG_SPRITES_USE_IWRAM added.
+ * * Import tool now checks if all input audio files have been imported or not.
+ * * Release sounds from <a href="https://github.com/stuij/apex-audio-system">AAS</a> queue fixed.
+ * * @ref faq_sprites_sort_layers question added to the @ref faq page.
+ *
+ *
+ * @section changelog_19_1_0 19.1.0
+ *
+ * * bn::sprite_animate_action::set_current_index and
+ *   bn::sprite_cached_animate_action::set_current_index added.
+ * * bn::sprite_animate_action::set_next_change_updates and
+ *   bn::sprite_cached_animate_action::set_next_change_updates added.
+ * * bn::hdma::start and bn::hdma::high_priority_start check if the DMA channel is available.
+ * * Link-time optimization builds fixed.
+ *
+ *
+ * @section changelog_19_0_0 19.0.0
+ *
+ * * `aas` (<a href="https://github.com/stuij/apex-audio-system">Apex Audio System</a>) and `null` audio backends added.
+ *   Audio backends can be specified with the `AUDIOBACKEND` makefile variable.
+ * * @ref BN_CFG_AUDIO_STEREO and @ref BN_CFG_AUDIO_DYNAMIC_MIXING added.
+ * * `null` DMG audio backend added. DMG audio backends can be specified with the `DMGAUDIOBACKEND` makefile variable.
+ * * EWRAM overclocking removed, as some GBA SPs crash after a few frames when enabled.
+ * * Sounds with higher priority are not discarded on the <a href="https://maxmod.org">Maxmod</a> queue
+ *   when playing a new one.
+ * * Erase sounds from <a href="https://maxmod.org">Maxmod</a> queue fixed.
+ *
+ *
+ * @section changelog_18_9_0 18.9.0
+ *
+ * * bn::fixed::modulo fixed.
+ * * Binary data folders documentation improved.
+ * * Some 3rd party games have been forked to work with this release.
+ *
+ *
+ * @section changelog_18_8_0 18.8.0
  *
  * * bn::best_fit_allocator::check_empty_on_destructor and bn::best_fit_allocator::set_check_empty_on_destructor added.
+ * * @ref BN_CFG_ASSERT_SHOW_GENERAL_INFO added.
+ * * @ref BN_CFG_ASSERT_TAG added.
  * * Import tool now allows to specify the width of sprites and sprite tiles.
  *   See the @ref import_image import guide to learn how to specify it.
  * * Show the sum of the ticks of all entries in the profiler results.
@@ -206,11 +458,11 @@
  * * bn::random::get_unbiased_int, bn::random::get_unbiased_fixed, bn::seed_random::get_unbiased_int
  *   and bn::seed_random::get_unbiased_fixed added (thanks <a href="https://github.com/alope107">alope107</a>!).
  * * H-Blank effects management optimized.
- * * @ref BN_EWRAM_WAIT_STATE_1 crash after boot documented.
+ * * `BN_EWRAM_WAIT_STATE_1` crash after boot documented.
  * * Slow EWRAM test added.
  * * IWRAM vs EWRAM stack tests added to the `profiler` coroutine test.
  * * Slow game pak test improved.
- * * GCC14 false build warnings in Butano Fighter fixed.
+ * * GCC 14 false build warnings in Butano Fighter fixed.
  *
  *
  * @section changelog_17_5_0 17.5.0
@@ -257,7 +509,7 @@
  *   bn::iregular_bg_animate_action::next_change_updates, bn::iregular_bg_cached_animate_action::next_change_updates,
  *   bn::iaffine_bg_animate_action::next_change_updates and bn::iaffine_bg_cached_animate_action::next_change_updates added.
  * * `bn::pair` is now a `std::pair` alias.
- * * <a href="https://www.coranac.com/man/tonclib/">Tonclib</a> ASM ROM usage reduced.
+ * * <a href="https://www.coranac.com/man/tonclib">Tonclib</a> ASM ROM usage reduced.
  * * `profiler` example simplified.
  * * Compression algorithms added to the `profiler` test.
  * * @ref faq_stack_trace question added to the @ref faq page.
@@ -281,7 +533,7 @@
  * * Regular big maps canvas height increased.
  * * Force at least one update before sleeping in bn::core::sleep.
  * * bn::span::size_bytes implicit conversion warning fixed.
- * * <a href="https://wonderful.asie.pl/">Wonderful Toolchain</a> binary files build time reduced.
+ * * <a href="https://wonderful.asie.pl">Wonderful Toolchain</a> binary files build time reduced.
  * * Scale can be changed in the `world_map` example.
  *
  *
@@ -332,7 +584,7 @@
  *
  * @section changelog_16_4_0 16.4.0
  *
- * * <a href="https://wonderful.asie.pl/">Wonderful Toolchain</a> experimental support!
+ * * <a href="https://wonderful.asie.pl">Wonderful Toolchain</a> experimental support!
  *   See the @ref getting_started_wt guide to learn how to build Butano games with it.
  * * Real time clock (RTC) support thanks to <a href="https://github.com/felixjones/agbabi">agbabi</a>.
  *   See bn::date, bn::time and the `date_time` example to learn how to deal with the RTC.
@@ -349,8 +601,8 @@
  * @section changelog_16_3_0 16.3.0
  *
  * * bn::music::stop, bn::dmg_music::stop, bn::sound_handle::stop and bn::sound_handle::release can be called
- *   without triggering an assert if the music/sound in question isn't playing.
- * * Target `*.gba` file is rebuilt when the target `*.elf` file isn't present.
+ *   without triggering an assert if the music/sound in question is not playing.
+ * * Target `*.gba` file is rebuilt when the target `*.elf` file is not present.
  * * Sprite affine mats management CPU usage reduced.
  * * Sound handles management CPU usage reduced.
  * * Backgrounds management CPU usage reduced.
@@ -429,8 +681,8 @@
  * * `BN_DATA_EWRAM_BSS` added.
  * * bn::memory::used_static_ewram fixed.
  * * Butano subsystems ROM usage reduced.
- * * <a href="https://www.coranac.com/man/tonclib/">Tonclib</a> tiled surface functions added.
- * * Unused <a href="https://www.coranac.com/man/tonclib/">Tonclib</a> functions and data removed.
+ * * <a href="https://www.coranac.com/man/tonclib">Tonclib</a> tiled surface functions added.
+ * * Unused <a href="https://www.coranac.com/man/tonclib">Tonclib</a> functions and data removed.
  *
  *
  * @section changelog_15_4_1 15.4.1
@@ -577,7 +829,7 @@
  *
  * @section changelog_13_12_1 13.12.1
  *
- * <a href="https://www.coranac.com/man/tonclib/">Tonclib</a> linking error fixed.
+ * <a href="https://www.coranac.com/man/tonclib">Tonclib</a> linking error fixed.
  *
  *
  * @section changelog_13_12_0 13.12.0
@@ -699,7 +951,7 @@
  * * bn::best_fit_allocator (used by the heap manager) CPU usage reduced.
  * * bn::best_fit_allocator sanity check can be enabled with @ref BN_CFG_BEST_FIT_ALLOCATOR_SANITY_CHECK_ENABLED.
  * * bn::best_fit_allocator::free calls can be validated with @ref BN_CFG_BEST_FIT_ALLOCATOR_FREE_CHECK_ENABLED.
- * * <a href="https://www.coranac.com/man/tonclib/">Tonclib</a> unused components removed
+ * * <a href="https://www.coranac.com/man/tonclib">Tonclib</a> unused components removed
  *   (EWRAM and ROM usage reduced).
  * * bn::best_fit_allocator::realloc can shrink allocations.
  * * BPP mode can be specified when importing sprites and sprite palettes.
@@ -774,7 +1026,7 @@
  * @section changelog_11_0_0 11.0.0
  *
  * Huffman images compression support
- * (make sure to update <a href="https://devkitpro.org/">devkitARM</a> before using it).
+ * (make sure to update <a href="https://devkitpro.org">devkitARM</a> before using it).
  *
  *
  * @section changelog_10_7_0 10.7.0
@@ -1211,7 +1463,7 @@
  *
  * @section changelog_6_13_0 6.13.0
  *
- * * EWRAM wait states count can be specified with @ref BN_CFG_EWRAM_WAIT_STATE.
+ * * EWRAM wait states count can be specified with `BN_CFG_EWRAM_WAIT_STATE`.
  * * bn::fixed_t::floor_integer and bn::fixed_t::ceil_integer added.
  * * bn::keypad::any_held, bn::keypad::any_pressed and bn::keypad::any_released added.
  * * Unnecessary GPIO register writes avoided.
@@ -1237,7 +1489,7 @@
  * * 64bit integer division by 0 assert added.
  * * Big maps maximum valid position fixed.
  * * Compressed tiles warning fixed.
- * * GCC11 warning fixed.
+ * * GCC 11 build warning fixed.
  * * Some 8x8 sprite text characters fixed.
  * * @ref qt_creator added.
  * * More questions added to @ref faq page.

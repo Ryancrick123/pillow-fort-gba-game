@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -51,6 +51,16 @@
  * `TARGET := $(notdir $(CURDIR))_mb`
  *
  *
+ * @subsection faq_donate Is there any way to donate to Butano?
+ *
+ * Yes, you can make games with it and share them with your friends :)
+ *
+ * You also can:
+ * * Make good bug reports.
+ * * Help newbies.
+ * * Show cool splash screens in your games to say they were made with Butano.
+ *
+ *
  * @section faq_programming Programming
  *
  *
@@ -69,7 +79,7 @@
  * Take a look at the @ref qt_creator.
  *
  *
- * @subsection faq_incomplete_type Why I get an incomplete type error when trying to use a Butano class?
+ * @subsection faq_incomplete_type Why do I get an incomplete type error when trying to use a Butano class?
  *
  * If you get an error message like these:
  *
@@ -138,7 +148,7 @@
  * To demangle it, you can use <a href="http://demangler.com/">demangler.com</a> for example.
  *
  *
- * @subsection faq_error_after_update Why I get undefined reference errors after updating Butano?
+ * @subsection faq_error_after_update Why do I get undefined reference errors after updating Butano?
  *
  * If after updating Butano you get error messages like this one:
  *
@@ -269,6 +279,12 @@
  * As always, you also can remove code until the crash goes away.
  *
  *
+ * @subsection faq_screen_pixels Can I directly manipulate screen pixels?
+ *
+ * You can directly manipulate the pixels of bitmap backgrounds, but avoid them if you can,
+ * as they're much slower than tiled backgrounds.
+ *
+ *
  * @subsection faq_tonc_general_notes Are there some more general notes on GBA programming out there?
  *
  * <a href="https://gbadev.net/tonc/first.html#sec-notes">I'm glad you asked</a>.
@@ -297,7 +313,7 @@
  * Also, remember to call bn::core::init before using the heap.
  *
  *
- * @subsection faq_memory_types Why I run out of memory so often?
+ * @subsection faq_memory_types Why do I run out of memory so often?
  *
  * Besides VRAM and such, the GBA provides two memory banks:
  * * IWRAM: 32KB fast RAM.
@@ -384,7 +400,7 @@
  * @section faq_images Images
  *
  *
- * @subsection faq_images_invalid_header_size Why I get an "invalid header size" error when I try to import a *.bmp file?
+ * @subsection faq_images_invalid_header_size Why do I get an "invalid header size" error when I try to import a *.bmp file?
  *
  * If you get that error when importing a `*.bmp` file, it probably means that it contains unsupported features, such as:
  * * Compression.
@@ -449,9 +465,11 @@
  * @section faq_sprites Sprites
  *
  *
- * @subsection faq_sprites_top_left Why sprite coordinates are relative to the center of the screen, instead of to its top-left corner?
+ * @subsection faq_sprites_top_left Why are sprite coordinates relative to the center of the screen instead of the top-left corner?
  *
- * If you don't like it, you can always use the `top_left` methods to specify coordinates relative
+ * There's no way to make sprite coordinates relative to the top-left corner of the screen by default.
+ *
+ * However, if you don't like it, you can always use the `top_left` methods to specify coordinates relative
  * to the top-left corner of the screen. They're a bit slower than the regular ones, though.
  *
  *
@@ -469,6 +487,15 @@
  * No :)
  *
  *
+ * @subsection faq_sprites_max_scale Is 2x the maximum scale for sprites?
+ *
+ * Yes. Well, the size of a sprite's canvas can only be doubled, so for example if you need to scale
+ * a sprite of 16x16 pixels more than 2x, you need to resize the image used to create the sprite to
+ * at least 32x32 pixels.
+ *
+ * It's a hardware limitation, Butano can't avoid it.
+ *
+ *
  * @subsection faq_sprites_scanline Why whenever I have too many sprites on screen, some of them get cut off?
  *
  * If you show too many sprites on screen (especially if they're rotated or scaled),
@@ -484,16 +511,38 @@
  * Metasprites (groups of regular sprites that together represent one single bigger sprite) are not supported by Butano.
  *
  *
+ * @subsection faq_sprites_draw_tiles How can I draw on top of sprite tiles?
+ *
+ * Butano doesn't provide an easy way to do it, so you have to allocate tiles in VRAM with
+ * bn::sprite_tiles_ptr::allocate and draw on the the allocated tiles returned by bn::sprite_tiles_ptr::vram.
+ * Remember that you can't write to VRAM in byte-sized chunks.
+ *
+ *
  * @subsection faq_sprites_hidden Does hiding a sprite make it count towards the total number of allowed sprites?
  *
  * Hidden sprites are not committed to the GBA, but they still take resources like color palettes and VRAM.
  *
- * The easiest way to increase the maximum number of hidden sprites allowed for a specific project is
- * to define it in the `USERFLAGS` of its `Makefile`.
+ * The easiest way to increase the maximum number of hidden sprites allowed for a particular project is
+ * to set it in the `USERFLAGS` of its `Makefile`.
  *
  * For example, to set the maximum number of hidden sprites to 256:
  *
  * `USERFLAGS := -DBN_CFG_SPRITES_MAX_ITEMS=256`
+ *
+ * Remember to rebuild your project from scratch after modifying a `Makefile` (`make clean` before `make`).
+ *
+ *
+ * @subsection faq_sprites_sort_layers Why do I get "no more sprite sort layers available" errors?
+ *
+ * Sprites are grouped in layers depending of their background priority and z order, so to reduce memory usage
+ * and improve performance, please use as few unique z orders as possible.
+ *
+ * If you still need to increase the maximum number of sprite sort layers available for a particular project,
+ * the easiest way to do it is to set it in the `USERFLAGS` of its `Makefile`.
+ *
+ * For example, to set the maximum number of sprite sort layers to 32:
+ *
+ * `USERFLAGS := -DBN_CFG_SPRITES_MAX_SORT_LAYERS=32`
  *
  * Remember to rebuild your project from scratch after modifying a `Makefile` (`make clean` before `make`).
  *
@@ -508,7 +557,9 @@
  * @section faq_backgrounds Backgrounds
  *
  *
- * @subsection faq_backgrounds_top_left Why background coordinates are relative to the center of the screen, instead of to its top-left corner?
+ * @subsection faq_backgrounds_top_left Why are background coordinates relative to the center of the screen instead of the top-left corner?
+ *
+ * There's no way to make background coordinates relative to the top-left corner of the screen by default.
  *
  * If you don't like it, you can always use the `top_left` methods to specify coordinates relative
  * to the top-left corner of the screen. They're a bit slower than the regular ones, though.
@@ -535,7 +586,7 @@
  * Try to avoid big backgrounds whenever possible, because they are slower CPU wise.
  *
  *
- * @subsection faq_backgrounds_regular_affine Why there are two types of backgrounds (regular and affine)?
+ * @subsection faq_backgrounds_regular_affine Why are there two types of backgrounds (regular and affine)?
  *
  * It seems it is always better to use affine backgrounds, since they can be rotated, scaled, etc.
  * and its size can be up to 1024x1024 pixels without becoming big backgrounds.
@@ -551,13 +602,53 @@
  *
  * @subsection faq_backgrounds_animated How can I show a background with animated tiles?
  *
- * There are two ways, the easy one and the powerful one:
+ * There are multiple ways, from easy to powerful:
  * * If you only want to show some basic tile animation, such the water or the grass tiles in top-down RPGs,
- *   you can use one of these actions: bn::regular_bg_animate_action, bn::regular_bg_cached_animate_action,
+ *   you can use bn::regular_bg_tiles_ptr::overwrite_tile and bn::affine_bg_tiles_ptr::overwrite_tile.
+ *   You also can use one of these actions: bn::regular_bg_animate_action, bn::regular_bg_cached_animate_action,
  *   bn::affine_bg_animate_action and bn::affine_bg_cached_animate_action.
- *   The `regular_bgs` and `affine_bgs` examples show how to use some of them.
- * * If you want to show something more advanced, you need to manage the background map by yourself.
- *   The `dynamic_regular_bg` and `dynamic_affine_bg` examples show how to do it.
+ *   The `regular_bgs` and `affine_bgs` examples show how to use the overwrite tile methods and some of these actions.
+ * * If you want to show something more advanced, like destructible tiles, you should first think if it's possible
+ *   to handle those tiles with sprites, because it's going to be easier than the following approaches.
+ * * If animation actions and extra sprites are not enough, you need to manage the background map by yourself.
+ *   The `dynamic_regular_bg` and `dynamic_affine_bg` examples show how to handle a dynamic map.
+ * * If you need to squeeze the GBA CPU as much as possible, you always can handle *everything* by yourself
+ *   by calling bn::regular_bg_tiles_ptr::allocate and bn::regular_bg_map_ptr::allocate
+ *   (or bn::affine_bg_tiles_ptr::allocate and bn::affine_bg_map_ptr::allocate).
+ *
+ * Some dynamic map performance tips:
+ * * You can improve animated tiles performance if you only update the tiles to animate in the visible area
+ *   of your "virtual" map.
+ * * bn::regular_bg_map_ptr::reload_cells_ref() and bn::affine_bg_map_ptr::reload_cells_ref() only copy
+ *   the visible map cells to VRAM if the map is big, so reload performance isn't affected by the map size.
+ * * bn::regular_bg_tiles_ptr::reload_tiles_ref() and bn::affine_bg_tiles_ptr::reload_tiles_ref() copy *all* tiles
+ *   to VRAM even if the map is big, so you should avoid calling them if the map has enough unique tiles.
+ *
+ *
+ * @subsection faq_backgrounds_draw_tiles How can I draw on top of background tiles?
+ *
+ * Butano doesn't provide an easy way to do it, so you have to allocate tiles in VRAM with
+ * bn::regular_bg_tiles_ptr::allocate or bn::affine_bg_tiles_ptr::allocate and draw on the the allocated tiles
+ * returned by bn::regular_bg_tiles_ptr::vram or bn::affine_bg_tiles_ptr::vram. Remember that you can't
+ * write to VRAM in byte-sized chunks.
+ *
+ *
+ * @subsection faq_backgrounds_tiles_offset Why my dynamic map sometimes doesn't work as expected?
+ *
+ * If you don't want to have extra headaches when dealing with a map by yourself, remember to disable
+ * background tiles offset before creating the tiles used by the map with bn::bg_tiles::set_allow_offset.
+ *
+ * You can re-enable it after creating the tiles to improve VRAM usage again.
+ *
+ *
+ * @subsection faq_backgrounds_regular_wrapping How can I disable wrapping in a regular background?
+ *
+ * You can't, it's a hardware limitation (the GBA doesn't allow it).
+ *
+ * There are several workarounds, including:
+ * * Using a larger image with a transparent border around the background to keep the wrapping off-screen.
+ * * Using a window to mask away the background outside of a certain rectangular area on the screen.
+ * * Using an affine background, which allows to disable wrapping.
  *
  *
  * @subsection faq_backgrounds_error_grit Why can't I import a regular background with 1024 or less tiles?
@@ -582,12 +673,17 @@
  * the `dynamic_affine_bg` example for that.
  *
  *
+ * @subsection faq_backgrounds_metatiles Does Butano support metatiles?
+ *
+ * Metatiles (groups of regular tiles that together represent one single bigger tile) are not supported by Butano.
+ *
+ *
  * @subsection faq_backgrounds_hidden Does hiding a background make it count towards the total number of allowed backgrounds?
  *
  * Hidden backgrounds are not committed to the GBA, but they still take resources like color palettes and VRAM.
  *
- * The easiest way to increase the maximum number of hidden backgrounds allowed for a specific project is
- * to define it in the `USERFLAGS` of its `Makefile`.
+ * The easiest way to increase the maximum number of hidden backgrounds allowed for a particular project is
+ * to set it in the `USERFLAGS` of its `Makefile`.
  *
  * For example, to set the maximum number of hidden backgrounds to 8:
  *
@@ -601,8 +697,8 @@
  *
  * @subsection faq_audio_music_crash Why the game crashes when some Direct Sound songs are played?
  *
- * Butano uses the excellent <a href="https://maxmod.devkitpro.org/">Maxmod</a> library
- * for Direct Sound audio support.
+ * By default, Butano uses the excellent <a href="https://blocksds.skylyrac.net/maxmod/index.html">Maxmod</a>
+ * library for Direct Sound audio support.
  *
  * It provides impressive performance and support for lots of module music formats,
  * but unfortunately it crashes with some songs.
@@ -610,15 +706,19 @@
  * Sometimes it helps to change song's file format (for example, from `*.xm` to `*.it`).
  * You can use <a href="https://openmpt.org/">OpenMPT</a> to do that.
  *
- * You can also try to create a new issue in its
- * <a href="https://github.com/devkitPro/maxmod/issues">GitHub issues</a> page,
- * but since it seems the library was abandoned long time ago, don't get your hopes up too high.
+ * Keep in mind that the Maxmod's conversion tool provided by <a href="https://blocksds.skylyrac.net">BlocksDS</a>
+ * is more robust than the one provided by <a href="https://devkitpro.org/">devkitARM</a>, so using Butano with
+ * <a href="https://wonderful.asie.pl/">Wonderful Toolchain</a> could make your song work.
+ *
+ * If your song still crashes after trying <a href="https://wonderful.asie.pl/">Wonderful Toolchain</a>,
+ * you can try to create a new issue in the <a href="https://github.com/blocksds/sdk/issues">Maxmod's GitHub issues</a>
+ * page.
  *
  *
  * @subsection faq_audio_music_wav Why can't I use a long *.wav file as music?
  *
- * <a href="https://maxmod.devkitpro.org/">Maxmod</a> doesn't allow to play long `*.wav` files as music,
- * unfortunately.
+ * <a href="https://blocksds.skylyrac.net/maxmod/index.html">Maxmod</a> doesn't allow to play
+ * long `*.wav` files as music, unfortunately.
  *
  * The maximum length of sound samples is also small, so if you try to play a long `*.wav` file as a sound effect,
  * it should stop after a few seconds.
@@ -632,7 +732,7 @@
  * a tool that generates a `*.s3m` file from a long `*.wav` automatically.
  *
  *
- * @subsection faq_audio_music_missing_notes Why there are missing notes when playing some Direct Sound songs?
+ * @subsection faq_audio_music_missing_notes Why are there missing notes when playing some Direct Sound songs?
  *
  * If a song doesn't have more channels than the maximum number of active Direct Sound music channels
  * specified by @ref BN_CFG_AUDIO_MAX_MUSIC_CHANNELS, as before,
@@ -644,8 +744,8 @@
  *
  * If you have some free CPU left, you can increase Direct Sound audio mixing rate to improve its quality.
  *
- * The easiest way to specify Direct Sound audio mixing rate for a specific project is
- * to define it in the `USERFLAGS` of its `Makefile`.
+ * The easiest way to specify Direct Sound audio mixing rate for a particular project is
+ * to set it in the `USERFLAGS` of its `Makefile`.
  *
  * For example, to set Direct Sound audio mixing rate to 21KHz:
  *

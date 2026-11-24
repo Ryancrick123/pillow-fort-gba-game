@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -10,6 +10,10 @@
 #include "bn_sprite_regular_second_attributes.h"
 #include "bn_sorted_sprites.h"
 #include "../hw/include/bn_hw_sprite_affine_mats_constants.h"
+
+#if ! BN_CFG_SPRITES_USE_IWRAM
+    #include "bn_sprites_manager_hot.h"
+#endif
 
 #include "bn_sprites.cpp.h"
 #include "bn_sprite_ptr.cpp.h"
@@ -44,7 +48,12 @@ namespace
         bool reload_all_handles = false;
     };
 
-    BN_DATA_EWRAM_BSS static_data data;
+    alignas(static_data) BN_DATA_EWRAM_BSS char data_buffer[sizeof(static_data)];
+
+    [[nodiscard]] static_data& data_ref()
+    {
+        return *reinterpret_cast<static_data*>(data_buffer);
+    }
 
     void _always_update_indexes_to_commit(const item_type& item)
     {
@@ -52,6 +61,7 @@ namespace
 
         if(handles_index >= 0)
         {
+            static_data& data = data_ref();
             hw::sprites::copy_handle(item.handle, data.handles[handles_index]);
 
             if(handles_index < data.first_index_to_commit)
@@ -68,7 +78,7 @@ namespace
 
     inline void _update_indexes_to_commit(const item_type& item)
     {
-        if(! data.rebuild_handles)
+        if(! data_ref().rebuild_handles)
         {
             _always_update_indexes_to_commit(item);
         }
@@ -80,6 +90,7 @@ namespace
 
         if(item.visible) [[likely]]
         {
+            static_data& data = data_ref();
             item.check_on_screen = true;
             data.check_items_on_screen = true;
             data.rebuild_handles = true;
@@ -170,6 +181,8 @@ namespace
 
     void _rebuild_handles()
     {
+        static_data& data = data_ref();
+
         if(data.rebuild_handles)
         {
             data.rebuild_handles = false;
@@ -188,7 +201,12 @@ namespace
                 }
             }
 
-            int visible_items_count = _rebuild_handles_impl(reserved_count, handles, data.sorter.layers());
+            #if BN_CFG_SPRITES_USE_IWRAM
+                int visible_items_count = _rebuild_handles_impl(reserved_count, handles, data.sorter.layers());
+            #else
+                int visible_items_count = hot::rebuild_handles(reserved_count, handles, data.sorter.layers());
+            #endif
+
             BN_BASIC_ASSERT(visible_items_count >= 0, "Too many on screen sprites");
 
             int last_visible_items_count = data.last_visible_items_count;
@@ -234,7 +252,9 @@ namespace
 
 void init()
 {
-    ::new(static_cast<void*>(&data)) static_data();
+    ::new(static_cast<void*>(data_buffer)) static_data();
+
+    static_data& data = data_ref();
 
     for(hw::sprites::handle_type& handle : data.handles)
     {
@@ -246,17 +266,18 @@ void init()
 
 int used_items_count()
 {
-    return data.items_pool.size();
+    return data_ref().items_pool.size();
 }
 
 int available_items_count()
 {
-    return data.items_pool.available();
+    return data_ref().items_pool.available();
 }
 
 id_type create(const fixed_point& position, const sprite_shape_size& shape_size, sprite_tiles_ptr&& tiles,
                sprite_palette_ptr&& palette)
 {
+    static_data& data = data_ref();
     BN_BASIC_ASSERT(! data.items_pool.full(), "No more sprite items available");
 
     item_type& new_item = data.items_pool.create(position, shape_size, move(tiles), move(palette));
@@ -269,6 +290,8 @@ id_type create(const fixed_point& position, const sprite_shape_size& shape_size,
 id_type create_optional(const fixed_point& position, const sprite_shape_size& shape_size, sprite_tiles_ptr&& tiles,
                         sprite_palette_ptr&& palette)
 {
+    static_data& data = data_ref();
+
     if(data.items_pool.full()) [[unlikely]]
     {
         return nullptr;
@@ -283,6 +306,7 @@ id_type create_optional(const fixed_point& position, const sprite_shape_size& sh
 
 id_type create(sprite_builder&& builder)
 {
+    static_data& data = data_ref();
     BN_BASIC_ASSERT(! data.items_pool.full(), "No more sprite items available");
 
     item_type& new_item = data.items_pool.create(move(builder));
@@ -299,6 +323,8 @@ id_type create(sprite_builder&& builder)
 
 id_type create_optional(sprite_builder&& builder)
 {
+    static_data& data = data_ref();
+
     if(data.items_pool.full()) [[unlikely]]
     {
         return nullptr;
@@ -345,6 +371,7 @@ void decrease_usages(id_type id)
 
     if(! item->usages) [[likely]]
     {
+        static_data& data = data_ref();
         data.sorter.erase(*item);
 
         if(const sprite_affine_mat_ptr* item_affine_mat = item->affine_mat.get())
@@ -587,8 +614,8 @@ void set_x(id_type id, fixed x)
     fixed old_x = item->position.x();
     item->position.set_x(x);
 
-    int old_integer_x = old_x.right_shift_integer();
-    int new_integer_x = x.right_shift_integer();
+    int old_integer_x = old_x.shift_integer();
+    int new_integer_x = x.shift_integer();
     int diff = new_integer_x - old_integer_x;
 
     if(diff)
@@ -599,6 +626,7 @@ void set_x(id_type id, fixed x)
 
         if(item->visible)
         {
+            static_data& data = data_ref();
             item->check_on_screen = true;
             data.check_items_on_screen = true;
             data.rebuild_handles = true;
@@ -612,8 +640,8 @@ void set_y(id_type id, fixed y)
     fixed old_y = item->position.y();
     item->position.set_y(y);
 
-    int old_integer_y = old_y.right_shift_integer();
-    int new_integer_y = y.right_shift_integer();
+    int old_integer_y = old_y.shift_integer();
+    int new_integer_y = y.shift_integer();
     int diff = new_integer_y - old_integer_y;
 
     if(diff)
@@ -624,6 +652,7 @@ void set_y(id_type id, fixed y)
 
         if(item->visible)
         {
+            static_data& data = data_ref();
             item->check_on_screen = true;
             data.check_items_on_screen = true;
             data.rebuild_handles = true;
@@ -637,8 +666,8 @@ void set_position(id_type id, const fixed_point& position)
     fixed_point old_position = item->position;
     item->position = position;
 
-    point old_integer_position(old_position.x().right_shift_integer(), old_position.y().right_shift_integer());
-    point new_integer_position(position.x().right_shift_integer(), position.y().right_shift_integer());
+    point old_integer_position(old_position.x().shift_integer(), old_position.y().shift_integer());
+    point new_integer_position(position.x().shift_integer(), position.y().shift_integer());
     point diff = new_integer_position - old_integer_position;
 
     if(diff != point())
@@ -652,6 +681,7 @@ void set_position(id_type id, const fixed_point& position)
 
         if(item->visible)
         {
+            static_data& data = data_ref();
             item->check_on_screen = true;
             data.check_items_on_screen = true;
             data.rebuild_handles = true;
@@ -674,6 +704,7 @@ void set_bg_priority(id_type id, int bg_priority)
         BN_ASSERT(bg_priority >= 0 && bg_priority <= sprites::max_bg_priority(),
                   "Invalid BG priority: ", bg_priority);
 
+        static_data& data = data_ref();
         hw::sprites::set_bg_priority(bg_priority, item->handle);
         data.sorter.erase(*item);
         item->set_bg_priority(bg_priority);
@@ -697,6 +728,7 @@ void set_z_order(id_type id, int z_order)
         BN_ASSERT(z_order >= sprites::min_z_order() && z_order <= sprites::max_z_order(),
                   "Invalid z order: ", z_order);
 
+        static_data& data = data_ref();
         data.sorter.erase(*item);
         item->set_z_order(z_order);
         data.sorter.insert(*item);
@@ -706,6 +738,7 @@ void set_z_order(id_type id, int z_order)
 
 void put_above(id_type id)
 {
+    static_data& data = data_ref();
     auto item = static_cast<item_type*>(id);
 
     if(data.sorter.put_in_front_of_layer(*item))
@@ -716,6 +749,7 @@ void put_above(id_type id)
 
 void put_below(id_type id)
 {
+    static_data& data = data_ref();
     auto item = static_cast<item_type*>(id);
 
     if(data.sorter.put_in_back_of_layer(*item))
@@ -906,6 +940,7 @@ void set_visible(id_type id, bool visible)
 
     if(visible != item->visible)
     {
+        static_data& data = data_ref();
         item->visible = visible;
         data.rebuild_handles = true;
 
@@ -940,6 +975,7 @@ void set_camera(id_type id, camera_ptr&& camera)
 
         if(item->visible)
         {
+            static_data& data = data_ref();
             item->check_on_screen = true;
             data.check_items_on_screen = true;
             data.rebuild_handles = true;
@@ -958,6 +994,7 @@ void remove_camera(id_type id)
 
         if(item->visible)
         {
+            static_data& data = data_ref();
             item->check_on_screen = true;
             data.check_items_on_screen = true;
             data.rebuild_handles = true;
@@ -1090,13 +1127,24 @@ void set_third_attributes(id_type id, const sprite_third_attributes& third_attri
     set_bg_priority(id, third_attributes.bg_priority());
 }
 
+bool bg_sorting_enabled()
+{
+    return data_ref().sorter.bg_sorting_enabled();
+}
+
+void set_bg_sorting_enabled(bool bg_sorting_enabled)
+{
+    data_ref().sorter.set_bg_sorting_enabled(bg_sorting_enabled);
+}
+
 int reserved_handles_count()
 {
-    return data.reserved_handles_count;
+    return data_ref().reserved_handles_count;
 }
 
 void set_reserved_handles_count(int reserved_handles_count)
 {
+    static_data& data = data_ref();
     int old_reserved_handles_count = data.reserved_handles_count;
 
     if(reserved_handles_count != old_reserved_handles_count)
@@ -1130,6 +1178,7 @@ void reload(id_type id)
 
 void reload_blending()
 {
+    static_data& data = data_ref();
     bool fade_enabled = display_manager::blending_fade_enabled();
 
     if(data.rebuild_handles)
@@ -1157,6 +1206,7 @@ void reload_blending()
 
 void reload_all()
 {
+    static_data& data = data_ref();
     data.last_visible_items_count = hw::sprites::count();
     data.rebuild_handles = true;
     data.reload_all_handles = true;
@@ -1173,7 +1223,7 @@ void fill_hblank_effect_horizontal_positions(id_type id, int hw_x, const fixed* 
         {
             uint16_t& dest_value = dest_ptr[index];
             dest_value = attr1;
-            hw::sprites::set_x(positions_ptr[index].right_shift_integer(), dest_value);
+            hw::sprites::set_x(positions_ptr[index].shift_integer(), dest_value);
         }
     }
     else
@@ -1182,7 +1232,7 @@ void fill_hblank_effect_horizontal_positions(id_type id, int hw_x, const fixed* 
         {
             uint16_t& dest_value = dest_ptr[index];
             dest_value = attr1;
-            hw::sprites::set_x(hw_x + positions_ptr[index].right_shift_integer(), dest_value);
+            hw::sprites::set_x(hw_x + positions_ptr[index].shift_integer(), dest_value);
         }
     }
 }
@@ -1198,7 +1248,7 @@ void fill_hblank_effect_vertical_positions(id_type id, int hw_y, const fixed* po
         {
             uint16_t& dest_value = dest_ptr[index];
             dest_value = attr0;
-            hw::sprites::set_y(positions_ptr[index].right_shift_integer(), dest_value);
+            hw::sprites::set_y(positions_ptr[index].shift_integer(), dest_value);
         }
     }
     else
@@ -1207,7 +1257,7 @@ void fill_hblank_effect_vertical_positions(id_type id, int hw_y, const fixed* po
         {
             uint16_t& dest_value = dest_ptr[index];
             dest_value = attr0;
-            hw::sprites::set_y(hw_y + positions_ptr[index].right_shift_integer(), dest_value);
+            hw::sprites::set_y(hw_y + positions_ptr[index].shift_integer(), dest_value);
         }
     }
 }
@@ -1225,7 +1275,7 @@ void fill_hblank_effect_first_attributes(int hw_y, sprite_shape shape, bpp_mode 
 
             if(attributes.visible())
             {
-                int y = attributes.y().right_shift_integer();
+                int y = attributes.y().shift_integer();
                 int dest_value = hw::sprites::first_attributes(
                             y, shape, bpp, view_mode, attributes.mosaic_enabled(), attributes.blending_enabled(),
                             attributes.window_enabled(), fade_enabled);
@@ -1245,7 +1295,7 @@ void fill_hblank_effect_first_attributes(int hw_y, sprite_shape shape, bpp_mode 
 
             if(attributes.visible())
             {
-                int y = hw_y + attributes.y().right_shift_integer();
+                int y = hw_y + attributes.y().shift_integer();
                 int dest_value = hw::sprites::first_attributes(
                             y, shape, bpp, view_mode, attributes.mosaic_enabled(), attributes.blending_enabled(),
                             attributes.window_enabled(), fade_enabled);
@@ -1267,7 +1317,7 @@ void fill_hblank_effect_regular_second_attributes([[maybe_unused]] id_type id, i
         for(int index = 0, limit = display::height(); index < limit; ++index)
         {
             const sprite_regular_second_attributes& second_attributes = second_attributes_ptr[index];
-            int x = second_attributes.x().right_shift_integer();
+            int x = second_attributes.x().shift_integer();
             dest_ptr[index] = uint16_t(hw::sprites::second_attributes(x, size, second_attributes.horizontal_flip(),
                                                                       second_attributes.vertical_flip()));
         }
@@ -1277,7 +1327,7 @@ void fill_hblank_effect_regular_second_attributes([[maybe_unused]] id_type id, i
         for(int index = 0, limit = display::height(); index < limit; ++index)
         {
             const sprite_regular_second_attributes& second_attributes = second_attributes_ptr[index];
-            int x = hw_x + second_attributes.x().right_shift_integer();
+            int x = hw_x + second_attributes.x().shift_integer();
             dest_ptr[index] = uint16_t(hw::sprites::second_attributes(x, size, second_attributes.horizontal_flip(),
                                                                       second_attributes.vertical_flip()));
         }
@@ -1292,7 +1342,7 @@ void fill_hblank_effect_affine_second_attributes([[maybe_unused]] id_type id, in
         for(int index = 0, limit = display::height(); index < limit; ++index)
         {
             const sprite_affine_second_attributes& second_attributes = second_attributes_ptr[index];
-            int x = second_attributes.x().right_shift_integer();
+            int x = second_attributes.x().shift_integer();
             dest_ptr[index] = uint16_t(hw::sprites::second_attributes(x, size, second_attributes.affine_mat().id()));
         }
     }
@@ -1301,7 +1351,7 @@ void fill_hblank_effect_affine_second_attributes([[maybe_unused]] id_type id, in
         for(int index = 0, limit = display::height(); index < limit; ++index)
         {
             const sprite_affine_second_attributes& second_attributes = second_attributes_ptr[index];
-            int x = hw_x + second_attributes.x().right_shift_integer();
+            int x = hw_x + second_attributes.x().shift_integer();
             dest_ptr[index] = uint16_t(hw::sprites::second_attributes(x, size, second_attributes.affine_mat().id()));
         }
     }
@@ -1326,7 +1376,15 @@ void fill_hblank_effect_third_attributes([[maybe_unused]] sprite_shape_size shap
 
 void update_cameras()
 {
-    if(_update_cameras_impl(data.sorter.layers()))
+    static_data& data = data_ref();
+
+    #if BN_CFG_SPRITES_USE_IWRAM
+        bool check_items_on_screen = _update_cameras_impl(data.sorter.layers());
+    #else
+        bool check_items_on_screen = hot::update_cameras(data.sorter.layers());
+    #endif
+
+    if(check_items_on_screen)
     {
         data.check_items_on_screen = true;
         data.rebuild_handles = true;
@@ -1353,12 +1411,18 @@ void update_auto_double_size(id_type id)
 
 void update()
 {
+    static_data& data = data_ref();
     sprite_affine_mats_manager::update();
 
     if(data.check_items_on_screen)
     {
         data.check_items_on_screen = false;
-        _check_items_on_screen(data.sorter.layers());
+
+        #if BN_CFG_SPRITES_USE_IWRAM
+            _check_items_on_screen(data.sorter.layers());
+        #else
+            hot::check_items_on_screen(data.sorter.layers());
+        #endif
     }
 
     _rebuild_handles();
@@ -1366,6 +1430,7 @@ void update()
 
 void commit(bool use_dma)
 {
+    static_data& data = data_ref();
     sprite_affine_mats_manager::commit_data affine_mats_commit_data =
             sprite_affine_mats_manager::retrieve_commit_data();
     int first_index_to_commit = data.first_index_to_commit;

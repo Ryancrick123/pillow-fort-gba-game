@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -11,7 +11,7 @@
  *
  * @tableofcontents
  *
- * Importing your graphic and audio files into a GBA game can be annoying,
+ * Importing your graphic, audio and generic data files into a GBA game can be annoying,
  * but with Butano and this guide you will be good to go.
  *
  * GBA ROMs by themselves don't include a file system, so you can't put a couple of `*.bmp` files into a folder
@@ -24,7 +24,7 @@
  * * Inserts it into the ROM.
  * * Creates a C++ header into the `build` folder containing the required information to use the assets with ease.
  *
- * Let's see how to import image and audio files.
+ * Let's see how to import image, audio and generic data files.
  *
  *
  * @section import_image Images
@@ -231,7 +231,7 @@
  *
  * @subsection import_regular_bg Regular backgrounds
  *
- * An image file can contain multiple regular backgrounds.
+ * An image file can contain multiple regular backgrounds. Each background can contain up to 1024 tiles.
  * The size of a small regular background (which are faster) must be 256x256, 256x512, 512x256 or 512x512 pixels.
  * Big regular backgrounds are slower CPU wise, but can have any width or height multiple of 256 pixels.
  *
@@ -318,8 +318,6 @@
  *
  * @subsection import_regular_bg_tiles Regular background tiles
  *
- * An image file can contain up to 1024 regular background tiles.
- *
  * An example of the `*.json` files required for regular background tiles is the following:
  *
  * @code{.json}
@@ -369,7 +367,7 @@
  *
  * @subsection import_affine_bg Affine backgrounds
  *
- * An image file can contain multiple affine backgrounds.
+ * An image file can contain multiple affine backgrounds. Each background can contain up to 256 tiles.
  * The size of a small affine background (which are faster) must be 128x128, 256x256, 512x512 or 1024x1024 pixels.
  * Big affine backgrounds are slower CPU wise, but can have any width or height multiple of 256 pixels.
  *
@@ -441,8 +439,6 @@
  *
  * @subsection import_affine_bg_tiles Affine background tiles
  *
- * An image file can contain up to 256 affine background tiles.
- *
  * An example of the `*.json` files required for affine background tiles is the following:
  *
  * @code{.json}
@@ -482,6 +478,131 @@
  * #include "bn_affine_bg_tiles_items_image.h"
  *
  * bn::affine_bg_tiles_ptr affine_bg_tiles = bn::affine_bg_tiles_items::image.create_tiles();
+ * @endcode
+ *
+ *
+ * @subsection import_palette_bitmap Palette bitmaps
+ *
+ * An example of the `*.json` files required for palette bitmaps is the following:
+ *
+ * @code{.json}
+ * {
+ *     "type": "palette_bitmap"
+ * }
+ * @endcode
+ *
+ * The fields for palette bitmaps are the following:
+ * * `"type"`: must be `"palette_bitmap"` for palette bitmaps.
+ * * `"colors_count"`: optional field which specifies the bitmap palette size [1..256].
+ * * `"pixels_compression"`: optional field which specifies the compression of the pixels data:
+ *   * `"none"`: uncompressed data (this is the default option).
+ *   * `"lz77"`: LZ77 compressed data.
+ *   * `"run_length"`: run-length compressed data.
+ *   * `"huffman"`: Huffman compressed data.
+ *   * `"auto"`: uses the option which gives the smallest data size.
+ *   * `"auto_no_huffman"`: uses the option which gives the smallest data size, excluding "huffman".
+ * * `"palette_compression"`: optional field which specifies the compression of the colors data:
+ *   * `"none"`: uncompressed data (this is the default option).
+ *   * `"lz77"`: LZ77 compressed data.
+ *   * `"run_length"`: run-length compressed data.
+ *   * `"huffman"`: Huffman compressed data.
+ *   * `"auto"`: uses the option which gives the smallest data size.
+ *   * `"auto_no_huffman"`: uses the option which gives the smallest data size, excluding "huffman".
+ * * `"compression"`: optional field which specifies the compression of the pixels and the colors data:
+ *   * `"none"`: uncompressed data (this is the default option).
+ *   * `"lz77"`: LZ77 compressed data.
+ *   * `"run_length"`: run-length compressed data.
+ *   * `"huffman"`: Huffman compressed data.
+ *   * `"auto"`: uses the option which gives the smallest data size.
+ *   * `"auto_no_huffman"`: uses the option which gives the smallest data size, excluding "huffman".
+ *
+ * If the conversion process has finished successfully,
+ * a bn::palette_bitmap_item should have been generated in the `build` folder.
+ *
+ * For example, from two files named `image.bmp` and `image.json`,
+ * a header file named `bn_palette_bitmap_items_image.h` is generated in the `build` folder.
+ *
+ * You can use this header to create a palette bitmap background and blit the pixels on it
+ * with only three lines of C++ code:
+ *
+ * @code{.cpp}
+ * #include "bn_palette_bitmap_items_image.h"
+ *
+ * bn::palette_bitmap_bg_ptr bg = bn::palette_bitmap_bg_ptr::create(bn::palette_bitmap_items::image.palette_item());
+ * bn::palette_bitmap_bg_painter painter(bg);
+ * painter.blit(16, 8, bn::palette_bitmap_items::image.pixels_item());
+ * @endcode
+ *
+ *
+ * @subsection import_palette_bitmap_pixels Palette bitmap pixels
+ *
+ * An example of the `*.json` files required for palette bitmap pixels is the following:
+ *
+ * @code{.json}
+ * {
+ *     "type": "palette_bitmap_pixels"
+ * }
+ * @endcode
+ *
+ * The fields for palette bitmap pixels are the following:
+ * * `"type"`: must be `"palette_bitmap_pixels"` for palette bitmap pixels.
+ * * `"compression"`: optional field which specifies the compression of the pixels data:
+ *   * `"none"`: uncompressed data (this is the default option).
+ *   * `"lz77"`: LZ77 compressed data.
+ *   * `"run_length"`: run-length compressed data.
+ *   * `"huffman"`: Huffman compressed data.
+ *   * `"auto"`: uses the option which gives the smallest data size.
+ *   * `"auto_no_huffman"`: uses the option which gives the smallest data size, excluding "huffman".
+ *
+ * If the conversion process has finished successfully,
+ * a bn::palette_bitmap_pixels_item should have been generated in the `build` folder.
+ *
+ * For example, from two files named `image.bmp` and `image.json`,
+ * a header file named `bn_palette_bitmap_pixels_items_image.h` is generated in the `build` folder.
+ *
+ * You can use this header to blit the pixels on a palette bitmap background with only two lines of C++ code:
+ *
+ * @code{.cpp}
+ * #include "bn_palette_bitmap_pixels_items_image.h"
+ *
+ * bn::palette_bitmap_bg_painter painter(bg);
+ * painter.blit(16, 8, bn::palette_bitmap_pixels_items::image);
+ * @endcode
+ *
+ *
+ * @subsection import_direct_bitmap Direct bitmaps
+ *
+ * An example of the `*.json` files required for direct bitmaps is the following:
+ *
+ * @code{.json}
+ * {
+ *     "type": "direct_bitmap"
+ * }
+ * @endcode
+ *
+ * The fields for direct bitmaps are the following:
+ * * `"type"`: must be `"direct_bitmap"` for direct bitmaps.
+ * * `"compression"`: optional field which specifies the compression of the data:
+ *   * `"none"`: uncompressed data (this is the default option).
+ *   * `"lz77"`: LZ77 compressed data.
+ *   * `"run_length"`: run-length compressed data.
+ *   * `"huffman"`: Huffman compressed data.
+ *   * `"auto"`: uses the option which gives the smallest data size.
+ *   * `"auto_no_huffman"`: uses the option which gives the smallest data size, excluding "huffman".
+ *
+ * If the conversion process has finished successfully,
+ * a bn::direct_bitmap_item should have been generated in the `build` folder.
+ *
+ * For example, from two files named `image.bmp` and `image.json`,
+ * a header file named `bn_direct_bitmap_items_image.h` is generated in the `build` folder.
+ *
+ * You can use this header to blit the bitmap on a direct bitmap background with only two lines of C++ code:
+ *
+ * @code{.cpp}
+ * #include "bn_direct_bitmap_items_image.h"
+ *
+ * bn::direct_bitmap_bg_painter painter(bg);
+ * painter.blit(16, 8, bn::direct_bitmap_items::image);
  * @endcode
  *
  *
@@ -530,11 +651,12 @@
  * By default audio files played with Direct Sound channels go into the `audio` folder of your project,
  * and music files played with DMG channels go into the `dmg_audio` folder.
  *
- * Direct Sound stuff is managed by the awesome <a href="https://maxmod.devkitpro.org/">Maxmod</a>,
- * so if you have an issue with Direct Sound music or with sound effects, well, you know.
+ * By default, Direct Sound stuff is managed by the awesome
+ * <a href="https://blocksds.skylyrac.net/maxmod/index.html">Maxmod</a>, so if you have an issue
+ * with Direct Sound music or with sound effects, well, you know.
  *
  * DMG channels are handled by the also impressive <a href="https://github.com/AntonioND/gbt-player">GBT Player</a>
- * and <a href="https://github.com/copyrat90/gbadev-ja-test">VGM player</a>,
+ * and <a href="https://github.com/copyrat90/advgm">advgm</a>,
  * so if you have issues with DMG music, you know where to go.
  *
  * A really nice application for editing audio files
@@ -544,11 +666,14 @@
  * @subsection import_direct_sound_music Direct Sound music
  *
  * The required format for Direct Sound music is module files with `*.mod`, `*.xm`, `*.s3m` and `*.it` extensions.
+ * If you're using <a href="https://github.com/stuij/apex-audio-system">Apex Audio System</a>
+ * instead of the default audio backend (<a href="https://blocksds.skylyrac.net/maxmod/index.html">Maxmod</a>),
+ * only module files with `*.mod` extension are allowed.
  *
  * By default Butano supports up to 16 music channels,
  * but this limit can be increased by overloading the definition of @ref BN_CFG_AUDIO_MAX_MUSIC_CHANNELS.
  *
- * However, if it is possible don't do this, don't make the poor GBA suffer.
+ * However, don't do it if you can, don't make the poor GBA suffer.
  *
  * If the conversion process has finished successfully,
  * a bunch of bn::music_item objects under the `bn::music_items` namespace
@@ -567,6 +692,11 @@
  * The required format for DMG music is module files with `*.mod`, `*.s3m` and `*.vgm` extensions.
  *
  * The recommended way to generate `*.vgm` compatible files is to use
+ * <a href="https://github.com/tildearrow/furnace">Furnace</a>:
+ *
+ * @image html import_furnace.png
+ *
+ * You should also be able to generate `*.vgm` compatible files with
  * <a href="https://github.com/SuperDisk/hUGETracker">hUGETracker 1.01</a> with timer based tempo disabled:
  *
  * @image html import_hugetracker.png
@@ -624,6 +754,28 @@
  * #include "bn_sound_items.h"
  *
  * bn::sound_items::sfx.play();
+ * @endcode
+ *
+ *
+ * @section import_generic_data Generic data
+ *
+ * Generic data files go into the folder specified by the `DATA` variable of the `Makefile` of your project.
+ *
+ * If the conversion process has finished successfully, for each `*.bin` file
+ * a header file should have been generated in the `build` folder.
+ *
+ * For example, from a file named `generic_data.bin`,
+ * a header file named `generic_data_bin.h` is generated in the `build` folder.
+ *
+ * You can use this header to use the data in the `generic_data.bin` file:
+ *
+ * @code{.cpp}
+ * #include "generic_data_bin.h"
+ *
+ * if(generic_data_bin_size)
+ * {
+ *     BN_LOG(generic_data_bin[0]);
+ * }
  * @endcode
  */
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -31,6 +31,26 @@ void play(music_item item, fixed volume)
     BN_BASIC_ASSERT(volume >= 0 && volume <= 1, "Volume range is [0..1]: ", volume);
 
     audio_manager::play_jingle(item, volume);
+}
+
+void stop()
+{
+    audio_manager::stop_jingle();
+}
+
+bool paused()
+{
+    return audio_manager::jingle_paused();
+}
+
+void pause()
+{
+    audio_manager::pause_jingle();
+}
+
+void resume()
+{
+    audio_manager::resume_jingle();
 }
 
 fixed volume()

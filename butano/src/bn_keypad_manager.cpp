@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -69,15 +69,21 @@ namespace
         #endif
     };
 
-    BN_DATA_EWRAM_BSS static_data data;
+    alignas(static_data) BN_DATA_EWRAM_BSS char data_buffer[sizeof(static_data)];
+
+    [[nodiscard]] static_data& data_ref()
+    {
+        return *reinterpret_cast<static_data*>(data_buffer);
+    }
 }
 
 void init(const string_view& commands)
 {
-    ::new(static_cast<void*>(&data)) static_data();
+    ::new(static_cast<void*>(data_buffer)) static_data();
 
     BN_ASSERT(commands.size() % 2 == 0, "Invalid commands size: ", commands.size());
 
+    static_data& data = data_ref();
     data.commands = commands;
     data.read_commands = ! commands.empty();
 
@@ -88,36 +94,37 @@ void init(const string_view& commands)
 
 bool held(key_type key)
 {
-    return data.held_keys & unsigned(key);
+    return data_ref().held_keys & unsigned(key);
 }
 
 bool pressed(key_type key)
 {
-    return data.pressed_keys & unsigned(key);
+    return data_ref().pressed_keys & unsigned(key);
 }
 
 bool released(key_type key)
 {
-    return data.released_keys & unsigned(key);
+    return data_ref().released_keys & unsigned(key);
 }
 
 bool any_held()
 {
-    return data.held_keys;
+    return data_ref().held_keys;
 }
 
 bool any_pressed()
 {
-    return data.pressed_keys;
+    return data_ref().pressed_keys;
 }
 
 bool any_released()
 {
-    return data.released_keys;
+    return data_ref().released_keys;
 }
 
 void update()
 {
+    static_data& data = data_ref();
     unsigned previous_keys = data.held_keys;
     unsigned current_keys;
 
@@ -160,7 +167,7 @@ void set_interrupt(const span<const key_type>& keys)
 void stop()
 {
     #if BN_CFG_KEYPAD_LOG_ENABLED
-        data.logger.flush();
+        data_ref().logger.flush();
     #endif
 }
 

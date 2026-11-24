@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -56,6 +56,26 @@ namespace bn::jingle
      * @param volume Volume level, in the range [0..1].
      */
     void play(music_item item, fixed volume);
+
+    /**
+     * @brief Stops playback of the active Direct Sound jingle.
+     */
+    void stop();
+
+    /**
+     * @brief Indicates if the active Direct Sound jingle has been paused or not.
+     */
+    [[nodiscard]] bool paused();
+
+    /**
+     * @brief Pauses playback of the active Direct Sound jingle.
+     */
+    void pause();
+
+    /**
+     * @brief Resumes playback of the paused Direct Sound jingle.
+     */
+    void resume();
 
     /**
      * @brief Returns the volume of the active Direct Sound jingle.

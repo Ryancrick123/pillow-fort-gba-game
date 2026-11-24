@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -35,12 +35,23 @@
  * Specifies the maximum number of used sprite sort layers.
  *
  * Sprites are grouped in layers depending of their background priority and z order,
- * so to reduce memory usage and improve performance, please use as less unique z orders as possible.
+ * so to reduce memory usage and improve performance, please use as few unique z orders as possible.
  *
  * @ingroup sprite
  */
 #ifndef BN_CFG_SPRITES_MAX_SORT_LAYERS
     #define BN_CFG_SPRITES_MAX_SORT_LAYERS 16
+#endif
+
+/**
+ * @def BN_CFG_SPRITES_USE_IWRAM
+ *
+ * Indicates if the sprites manager should use IWRAM to improve performance or not.
+ *
+ * @ingroup sprite
+ */
+#ifndef BN_CFG_SPRITES_USE_IWRAM
+    #define BN_CFG_SPRITES_USE_IWRAM true
 #endif
 
 #endif

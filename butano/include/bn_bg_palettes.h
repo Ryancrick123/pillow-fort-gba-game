@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -16,11 +16,7 @@
 
 #include "bn_fixed.h"
 #include "bn_optional.h"
-
-namespace bn
-{
-    class color;
-}
+#include "bn_palette_effect_type.h"
 
 /**
  * @brief Background color palettes related functions.
@@ -152,6 +148,21 @@ namespace bn::bg_palettes
      * @param intensity New intensity in the range [0..1].
      */
     void set_fade(color color, fixed intensity);
+
+    /**
+     * @brief Returns the custom effect applied to all background color palettes.
+     */
+    [[nodiscard]] palette_effect_type custom_effect();
+
+    /**
+     * @brief Sets the custom effect applied to all background color palettes.
+     */
+    void set_custom_effect(palette_effect_type effect);
+
+    /**
+     * @brief Reapplies the custom effect to all background color palettes.
+     */
+    void reload_custom_effect();
 
     /**
      * @brief Logs the current status of the background color palettes manager.

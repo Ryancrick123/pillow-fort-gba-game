@@ -13,21 +13,34 @@ export DEPSDIR	:=  $(CURDIR)/$(BUILD)
 
 CFILES          :=  $(foreach dir,	$(SOURCES),	$(notdir $(wildcard $(dir)/*.c))) \
 						$(foreach dir,	$(BNSOURCES),	$(notdir $(wildcard $(dir)/*.c)))
+
+ifeq ($(strip $(AUDIOBACKEND)),aas)
+	CFILES		+=	bn_aas_info.c
+endif
 						
 CPPFILES        :=	$(foreach dir,	$(SOURCES),	$(notdir $(wildcard $(dir)/*.cpp))) \
 						$(foreach dir,	$(BNSOURCES),	$(notdir $(wildcard $(dir)/*.cpp)))
 						
 SFILES          :=	$(foreach dir,	$(SOURCES),	$(notdir $(wildcard $(dir)/*.s))) \
 						$(foreach dir,	$(BNSOURCES),	$(notdir $(wildcard $(dir)/*.s)))
+
+ifeq ($(strip $(AUDIOBACKEND)),aas)
+	SFILES		+=	AAS_Data.s
+endif
 						
-BINFILES        :=	$(foreach dir,	$(DATA),	$(notdir $(wildcard $(dir)/*.*))) \
-						_bn_audio_soundbank.bin
-						
-DMGMODFILES		:=	$(foreach dir,	$(DMGAUDIO),	$(notdir $(wildcard $(dir)/*.mod)))
-						
-DMGS3MFILES		:=	$(foreach dir,	$(DMGAUDIO),	$(notdir $(wildcard $(dir)/*.s3m)))
-						
-DMGVGMFILES		:=	$(foreach dir,	$(DMGAUDIO),	$(notdir $(wildcard $(dir)/*.vgm)))
+BINFILES        :=	$(foreach dir,	$(DATA),	$(notdir $(wildcard $(dir)/*.*)))
+
+ifeq ($(strip $(AUDIOBACKEND)),maxmod)
+	BINFILES		+=	bn_audio_soundbank.bin
+endif
+
+ifeq ($(strip $(DMGAUDIOBACKEND)),default)
+	DMGMODFILES		:=	$(foreach dir,	$(DMGAUDIO),	$(notdir $(wildcard $(dir)/*.mod)))
+							
+	DMGS3MFILES		:=	$(foreach dir,	$(DMGAUDIO),	$(notdir $(wildcard $(dir)/*.s3m)))
+							
+	DMGVGMFILES		:=	$(foreach dir,	$(DMGAUDIO),	$(notdir $(wildcard $(dir)/*.vgm)))
+endif
 						
 GRAPHICSFILES	:=	$(foreach dir,	$(GRAPHICS),	$(notdir $(wildcard $(dir)/*.bmp)))
 
@@ -58,7 +71,7 @@ export OFILES           :=  $(OFILES_BIN) $(OFILES_DMG) $(OFILES_GRAPHICS) $(OFI
 #---------------------------------------------------------------------------------------------------------------------
 # Don't generate header files from audio soundbank (avoid rebuilding all sources when audio files are updated):
 #---------------------------------------------------------------------------------------------------------------------
-export HFILES           :=  $(filter-out _bn_audio_soundbank_bin.h,$(addsuffix .h,$(subst .,_,$(BINFILES))))
+export HFILES           :=  $(filter-out bn_audio_soundbank_bin.h,$(addsuffix .h,$(subst .,_,$(BINFILES))))
 
 export INCLUDE          :=  $(foreach dir,$(INCLUDES),-iquote $(CURDIR)/$(dir)) \
                                 $(foreach dir,$(LIBDIRS),-I$(dir)/include) \
@@ -76,8 +89,9 @@ all:
 	
 #---------------------------------------------------------------------------------
 $(BUILD):
-	@$(PYTHON) -B $(BN_TOOLS)/butano_assets_tool.py --grit="$(BN_GRIT)" --mmutil="$(BN_MMUTIL)" \
-			--audio="$(AUDIO)" --dmg_audio="$(DMGAUDIO)" --graphics="$(GRAPHICS)" --build=$(BUILD)
+	@$(PYTHON) -B $(BN_TOOLS)/butano_assets_tool.py --grit="$(BN_GRIT)" --audio="$(AUDIO)" \
+			--audio_backend="$(AUDIOBACKEND)" --audio_tool="$(AUDIOTOOL)" --dmg_audio="$(DMGAUDIO)" \
+			--dmg_audio_backend="$(DMGAUDIOBACKEND)" --graphics="$(GRAPHICS)" --build=$(BUILD)
 	@$(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------------------------------------------

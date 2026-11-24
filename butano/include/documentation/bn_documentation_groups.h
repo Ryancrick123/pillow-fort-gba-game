@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020-2025 Gustavo Valiente gustavo.valiente@protonmail.com
+ * Copyright (c) 2020-2026 Gustavo Valiente gustavo.valiente@protonmail.com
  * zlib License, see LICENSE file.
  */
 
@@ -82,7 +82,7 @@
 /**
  * @defgroup regular_bg Regular backgrounds
  *
- * Backgrounds which can't perform affine transformations.
+ * Tiled backgrounds which can't perform affine transformations.
  *
  * Also known as text backgrounds.
  *
@@ -92,11 +92,51 @@
 /**
  * @defgroup affine_bg Affine backgrounds
  *
- * Backgrounds which can perform affine transformations.
+ * Tiled backgrounds which can perform affine transformations.
  *
  * Also known as rotation backgrounds.
  *
  * @ingroup bg
+ */
+
+/**
+ * @defgroup bitmap_bg Bitmap backgrounds
+ *
+ * Backgrounds without tiles, with which video memory works like a width x height bitmap.
+ *
+ * @ingroup bg
+ */
+
+/**
+ * @defgroup palette_bitmap_bg Palette bitmap backgrounds
+ *
+ * Dual page bitmap backgrounds in which pixels are palette indexes.
+ *
+ * @ingroup bitmap_bg
+ */
+
+/**
+ * @defgroup direct_bitmap_bg Direct bitmap backgrounds
+ *
+ * Bitmap backgrounds in which pixels are colors.
+ *
+ * @ingroup bitmap_bg
+ */
+
+/**
+ * @defgroup sp_direct_bitmap_bg Single page direct bitmap backgrounds
+ *
+ * Direct bitmap backgrounds with a single page.
+ *
+ * @ingroup direct_bitmap_bg
+ */
+
+/**
+ * @defgroup dp_direct_bitmap_bg Dual page direct bitmap backgrounds
+ *
+ * Direct bitmap backgrounds with two pages.
+ *
+ * @ingroup direct_bitmap_bg
  */
 
 /**
@@ -172,7 +212,7 @@
  * @defgroup music Music
  *
  * Module files (files with `*.mod`, `*.xm`, `*.s3m` and `*.it` extensions) played with Direct Sound channels
- * thanks to <a href="https://maxmod.devkitpro.org/">Maxmod</a>.
+ * thanks to <a href="https://blocksds.skylyrac.net/maxmod/index.html">Maxmod</a>.
  *
  * @ingroup audio
  */
@@ -183,7 +223,7 @@
  * Module files (files with `*.mod` and `*.s3m` extensions) played with DMG channels
  * thanks to <a href="https://github.com/AntonioND/gbt-player">GBT Player</a>
  * and VGM audio files (files with `*.vgm` extension) played with DMG channels
- * thanks to <a href="https://github.com/copyrat90/gbadev-ja-test">VGM player</a>.
+ * thanks to <a href="https://github.com/copyrat90/advgm">advgm</a>.
  *
  * @ingroup audio
  */
@@ -192,7 +232,7 @@
  * @defgroup sound Sound effects
  *
  * Waveform audio files (files with `*.wav` extension) sound effects played with Direct Sound channels
- * thanks to <a href="https://maxmod.devkitpro.org/">Maxmod</a>.
+ * thanks to <a href="https://blocksds.skylyrac.net/maxmod/index.html">Maxmod</a>.
  *
  * @ingroup audio
  */
